@@ -142,3 +142,30 @@ button.heartNext {
     box-shadow: 0 8px 32px rgba(255, 192, 203, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
+
+/* Back Button Styling */
+.backBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #c0392b;
+    border: 1px solid #ffb6c1;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    z-index: 10;
+}
+
+.backBtn:active {
+    transform: scale(0.95);
+}
+
+/* Ensure screens maintain relative positioning for the back button */
+.screen {
+    position: relative;
+}
