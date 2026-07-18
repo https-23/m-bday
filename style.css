@@ -177,3 +177,22 @@ button.heartNext {
 .screen {
     position: relative;
 }
+/* ================================= */
+/* 3 Penguins Layout (Screen 1)      */
+/* ================================= */
+.penguin-group {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* इससे तीनों के पैर एक लाइन में दिखेंगे */
+    gap: 8px; /* पेंगुइन के बीच की दूरी */
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.penguin-group .gif-penguin {
+    width: 30%; /* मोबाइल स्क्रीन पर तीनों परफेक्ट फिट हो जाएंगे */
+    max-width: 100px; /* बहुत ज्यादा बड़े नहीं होंगे */
+    margin-bottom: 0;
+    mix-blend-mode: multiply; /* सफ़ेद डब्बा गायब करने का जादू */
+    filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.05));
+}
