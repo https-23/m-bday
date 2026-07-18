@@ -11,21 +11,15 @@
 </head>
 <body>
 
-    <!-- Floating Background -->
     <div id="floating-hearts"></div>
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
     <div class="sparkles"></div>
 
-    <!-- Main App -->
     <div id="app">
 
-        <!-- ================================= -->
-        <!-- Screen 1: The Question -->
-        <!-- ================================= -->
         <section class="screen active" id="screen1">
-            <!-- यहाँ penguin.png कर दिया है -->
             <img class="character" src="penguin.png" alt="Cute Penguin">
             <h1>I made something special for u ✨</h1>
             <p>do u wanna see it?</p>
@@ -35,41 +29,29 @@
             </div>
         </section>
 
-        <!-- ================================= -->
-        <!-- Angry Screen (If NO is clicked) -->
-        <!-- ================================= -->
         <section class="screen" id="angry">
-            <!-- यहाँ angry.penguin.gif कर दिया है -->
             <img class="character shake" src="angry.penguin.gif" alt="Angry Penguin">
             <h1>😤 HMPH ! HOW DARE YOU!?</h1>
             <button id="tryAgain">TRY AGAIN</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 2: Transition -->
-        <!-- ================================= -->
         <section class="screen" id="screen2">
+            <button class="backBtn" data-back="screen1">⬅️ Back</button>
             <h1>A special message for you... 🌸</h1>
-            <!-- यहाँ plane.penguin.gif कर दिया है -->
             <img class="character" src="plane.penguin.gif" alt="Penguin Plane">
             <p class="swipe">👇 Tap Anywhere to Continue</p>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 3: Happy Birthday -->
-        <!-- ================================= -->
         <section class="screen" id="screen3">
+            <button class="backBtn" data-back="screen2">⬅️ Back</button>
             <div id="confetti"></div>
             <h1 class="birthday">HAPPY<br>BIRTHDAY 🎂</h1>
-            <!-- यहाँ birthday.penguin.gif कर दिया है -->
             <img class="cake" src="birthday.penguin.gif" alt="Cake">
             <button class="heartNext">❤️</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 4: Envelope -->
-        <!-- ================================= -->
         <section class="screen" id="screen4">
+            <button class="backBtn" data-back="screen3">⬅️ Back</button>
             <h1>Open Me, One Surprise at a Time 💌</h1>
             <div id="envelope">
                 <div id="letter">
@@ -82,10 +64,8 @@
             <button class="next">Next →</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 5: Coupons -->
-        <!-- ================================= -->
         <section class="screen" id="screen5">
+            <button class="backBtn" data-back="screen4">⬅️ Back</button>
             <h1>Birthday coupons 🎁</h1>
             <p>Use them freely... valid anytime!</p>
             <div class="coupon-grid">
@@ -97,29 +77,22 @@
             <button class="heartNext">❤️</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 6: Flowers -->
-        <!-- ================================= -->
         <section class="screen" id="screen6">
+            <button class="backBtn" data-back="screen5">⬅️ Back</button>
             <h1>Flowers for you 🌸</h1>
-            <!-- यहाँ flowers-love-you.gif कर दिया है -->
             <img class="flowers" src="flowers-love-you.gif" alt="Flowers">
             <button class="heartNext">❤️</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 7: No Photos -->
-        <!-- ================================= -->
         <section class="screen" id="screen7">
+            <button class="backBtn" data-back="screen6">⬅️ Back</button>
             <img class="character" src="cry-penguin.gif" alt="Crying Penguin" style="width: 250px; margin-bottom: 20px;">
             <h2>Tumhari Photos nahi hai mere paas 🥺</h2>
             <button class="heartNext">❤️</button>
         </section>
 
-        <!-- ================================= -->
-        <!-- Screen 8: Final Wish -->
-        <!-- ================================= -->
         <section class="screen" id="screen8">
+            <button class="backBtn" data-back="screen7">⬅️ Back</button>
             <div class="glass">
                 <h1>My Wish For You ✨</h1>
                 <p>
