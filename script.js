@@ -1,8 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 1. CORE STATE MANAGEMENT ---
+    // --- 1. CORE STATE MANAGEMENT & HAPTICS ---
     const screens = document.querySelectorAll(".screen");
     let typeWriterTriggered = false;
+
+    // HAPTIC FEEDBACK ENGINE (Vibration)
+    function triggerHaptic(pattern = 15) {
+        // Sirf un devices par chalega jo vibration support karte hain (Mobiles)
+        if ("vibrate" in navigator) {
+            navigator.vibrate(pattern);
+        }
+    }
     
     function showScreen(screenId) {
         screens.forEach(screen => screen.classList.remove("active"));
@@ -11,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
             targetScreen.classList.add("active");
         }
 
-        // Auto-Reset Envelope when navigating back/forth
         if (screenId === "screen4") {
             const envelopeWrapper = document.getElementById("envelope-wrapper");
             const envelopeNextBtn = document.getElementById("envelopeNextBtn");
@@ -22,32 +29,40 @@ document.addEventListener("DOMContentLoaded", () => {
             if (clickHint) clickHint.style.display = "block";
         }
 
-        // Trigger Typewriter on Screen 8 only once
         if (screenId === "screen8" && !typeWriterTriggered) {
             triggerTypewriter();
             typeWriterTriggered = true;
         }
     }
 
-    // --- 2. EVENT LISTENERS (NAVIGATION) ---
+    // --- 2. EVENT LISTENERS (NAVIGATION WITH HAPTICS) ---
     document.getElementById("yesBtn")?.addEventListener("click", () => {
+        triggerHaptic(30); // Heavy click feel
         const bgMusic = document.getElementById("bg-music");
         if (bgMusic) {
             bgMusic.volume = 0.5;
-            bgMusic.play().catch(e => console.log("Audio permission pending until user interaction."));
+            bgMusic.play().catch(e => console.log("Audio permission pending."));
         }
         showScreen("screen2");
     });
     
-    document.getElementById("noBtn")?.addEventListener("click", () => showScreen("angry"));
-    document.getElementById("tryAgain")?.addEventListener("click", () => showScreen("screen1"));
-
-    // Screen 2 Anywhere Click (Except Back Button)
-    document.getElementById("screen2")?.addEventListener("click", (e) => {
-        if(!e.target.classList.contains("backBtn")) showScreen("screen3");
+    document.getElementById("noBtn")?.addEventListener("click", () => {
+        triggerHaptic([20, 50, 20]); // Angry double vibration
+        showScreen("angry");
+    });
+    
+    document.getElementById("tryAgain")?.addEventListener("click", () => {
+        triggerHaptic(20);
+        showScreen("screen1");
     });
 
-    // Next Buttons Mapping
+    document.getElementById("screen2")?.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("backBtn")) {
+            triggerHaptic(15);
+            showScreen("screen3");
+        }
+    });
+
     const nextMap = {
         "#screen3 .heartNext": "screen4",
         "#screen5 .heartNext": "screen6",
@@ -56,13 +71,16 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     Object.keys(nextMap).forEach(selector => {
-        document.querySelector(selector)?.addEventListener("click", () => showScreen(nextMap[selector]));
+        document.querySelector(selector)?.addEventListener("click", () => {
+            triggerHaptic(20);
+            showScreen(nextMap[selector]);
+        });
     });
 
-    // Back Buttons
     document.querySelectorAll(".backBtn").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
+            triggerHaptic(10); // Light pop for back button
             showScreen(btn.getAttribute("data-back"));
         });
     });
@@ -72,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (envelopeWrapper) {
         envelopeWrapper.addEventListener("click", () => {
             envelopeWrapper.classList.add("open");
+            triggerHaptic([30, 50, 30]); // Envelope opening feel
             const clickHint = document.querySelector(".click-hint");
             if (clickHint) clickHint.style.display = "none"; 
             
@@ -81,10 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1000);
         });
     }
-    document.getElementById("envelopeNextBtn")?.addEventListener("click", () => showScreen("screen5"));
+    document.getElementById("envelopeNextBtn")?.addEventListener("click", () => {
+        triggerHaptic(20);
+        showScreen("screen5");
+    });
 
-
-    // --- 4. HIGH PERFORMANCE PARTICLE SYSTEM (Canvas) ---
+    // --- 4. HIGH PERFORMANCE PARTICLE SYSTEM ---
     const pCanvas = document.getElementById("particle-canvas");
     const pCtx = pCanvas.getContext("2d");
     let particles = [];
@@ -98,14 +119,11 @@ document.addEventListener("DOMContentLoaded", () => {
     resizeCanvas();
 
     class Particle {
-        constructor() {
-            this.reset();
-            this.y = Math.random() * pCanvas.height; // Spread out initially
-        }
+        constructor() { this.reset(); this.y = Math.random() * pCanvas.height; }
         reset() {
             this.x = Math.random() * pCanvas.width;
             this.y = -50;
-            this.size = Math.random() * 15 + 15; // 15px to 30px
+            this.size = Math.random() * 15 + 15;
             this.speed = Math.random() * 2 + 1.5;
             this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
             this.rotation = Math.random() * 360;
@@ -123,46 +141,39 @@ document.addEventListener("DOMContentLoaded", () => {
             pCtx.font = `${this.size}px Arial`;
             pCtx.textAlign = "center";
             pCtx.textBaseline = "middle";
-            pCtx.globalAlpha = 0.6; // Slightly transparent
+            pCtx.globalAlpha = 0.6;
             pCtx.fillText(this.emoji, 0, 0);
             pCtx.restore();
         }
     }
 
-    // Initialize 30 particles
     for (let i = 0; i < 30; i++) particles.push(new Particle());
-
     function animateParticles() {
         pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animateParticles);
     }
-    animateParticles(); // Start engine
-
+    animateParticles();
 
     // --- 5. TYPEWRITER EFFECT ---
     function triggerTypewriter() {
         const pElement = document.getElementById("final-message");
         if (!pElement) return;
-        const text = pElement.innerHTML.replace(/<br>/g, '\n'); // Maintain breaks
+        const text = pElement.innerHTML.replace(/<br>/g, '\n');
         pElement.innerHTML = "";
         let i = 0;
-        
         function typing() {
             if (i < text.length) {
                 let char = text.charAt(i);
-                if (char === '\n') {
-                    pElement.innerHTML += "<br>";
-                } else {
-                    pElement.innerHTML += char;
-                }
+                pElement.innerHTML += (char === '\n') ? "<br>" : char;
                 i++;
-                setTimeout(typing, 35); // Speed
+                // Typewriter tick haptic (very light, skip some to avoid battery drain)
+                if(i % 3 === 0) triggerHaptic(2); 
+                setTimeout(typing, 35);
             }
         }
         typing();
     }
-
 
     // --- 6. SCRATCH CARD SYSTEM ---
     const messages = {
@@ -178,25 +189,26 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.querySelectorAll('.mini-card').forEach(card => {
         card.addEventListener('click', () => {
+            triggerHaptic(20);
             modalContent.innerHTML = messages[card.getAttribute('data-id')];
             modal.classList.add('show');
-            setTimeout(initPopupScratchCard, 300); // Wait for modal animation
+            setTimeout(initPopupScratchCard, 300);
         });
     });
 
-    document.getElementById('close-modal')?.addEventListener('click', () => modal.classList.remove('show'));
+    document.getElementById('close-modal')?.addEventListener('click', () => {
+        triggerHaptic(10);
+        modal.classList.remove('show');
+    });
 
     function initPopupScratchCard() {
         const ctx = scratchCanvas.getContext('2d');
         const rect = scratchCanvas.parentElement.getBoundingClientRect();
-        
-        // Exact pixel mapping for sharpness
         scratchCanvas.width = rect.width;
         scratchCanvas.height = rect.height;
 
         ctx.fillStyle = '#b3b3b3';
         ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
-
         ctx.font = "bold 24px 'Fredoka', sans-serif";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
@@ -204,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
         let isDrawing = false;
+        let scratchCount = 0;
 
         function scratch(e) {
             if (!isDrawing) return;
@@ -216,6 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.beginPath();
             ctx.arc(x, y, 25, 0, Math.PI * 2); 
             ctx.fill();
+
+            // Sandpaper Haptic Effect
+            scratchCount++;
+            if (scratchCount % 5 === 0) triggerHaptic(5); 
         }
 
         scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
@@ -226,4 +243,47 @@ document.addEventListener("DOMContentLoaded", () => {
         scratchCanvas.addEventListener('touchend', () => isDrawing = false);
         scratchCanvas.addEventListener('touchmove', scratch, {passive: false});
     }
+
+    // --- 7. GYROSCOPE & MOUSE PARALLAX ENGINE (The Magic) ---
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
+    // Mobile Phone Sensor Tracking
+    window.addEventListener("deviceorientation", (e) => {
+        if (!e.gamma || !e.beta) return;
+        let tiltX = e.gamma; // Left to right
+        let tiltY = e.beta;  // Front to back
+        
+        // Limit maximum tilt constraints
+        if (tiltX > 25) tiltX = 25; if (tiltX < -25) tiltX = -25;
+        if (tiltY > 55) tiltY = 55; if (tiltY < 25) tiltY = 25; // Normal holding angle is ~40deg
+        
+        targetX = (tiltX / 25) * 15; 
+        targetY = ((tiltY - 40) / 15) * 15; 
+    });
+
+    // Desktop Mouse Tracking (Fallback)
+    document.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 30; // Max 15px movement
+        const y = (e.clientY / window.innerHeight - 0.5) * 30;
+        targetX = x; 
+        targetY = y;
+    });
+
+    // Smooth Animation Loop
+    function renderParallax() {
+        // LERP (Linear Interpolation) for buttery smooth movement
+        currentX += (targetX - currentX) * 0.1;
+        currentY += (targetY - currentY) * 0.1;
+        
+        document.querySelectorAll(".character, .glass, .envelope-wrapper, .cake, .flowers").forEach(el => {
+            // Apply different depths. Glass moves slower than characters.
+            const depth = el.classList.contains('glass') ? 0.4 : 1;
+            el.style.transform = `translate(${currentX * depth}px, ${currentY * depth}px)`;
+        });
+        
+        requestAnimationFrame(renderParallax);
+    }
+    renderParallax(); // Start Parallax Engine
+
 });
