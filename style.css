@@ -11,7 +11,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden; /* prevents scrolling */
+    overflow: hidden; /* पूरी वेबसाइट स्क्रोल नहीं होगी */
 }
 
 /* Mobile App Container */
@@ -23,7 +23,7 @@ body {
     background-color: transparent;
 }
 
-/* Hide all screens by default */
+/* Screens - Yहाँ overflow-y: auto; ऐड किया है ताकि अंदर के पेज स्क्रोल हो सकें */
 .screen {
     display: none; 
     flex-direction: column;
@@ -33,9 +33,10 @@ body {
     padding: 20px;
     text-align: center;
     box-sizing: border-box;
+    overflow-y: auto; 
+    position: relative;
 }
 
-/* ONLY show the active screen with a smooth fade in */
 .screen.active {
     display: flex;
     animation: fadeIn 0.6s ease-in-out;
@@ -46,7 +47,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Typography (Fonts) */
+/* Typography */
 h1, h2 {
     font-family: 'Caveat', cursive;
     color: #c0392b;
@@ -57,29 +58,69 @@ h1, h2 {
 
 p {
     font-size: 1.2rem;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     color: #5d4037;
 }
 
-/* Images & GIFs */
+/* Basic Images */
 .character, .cake, .flowers {
-    width: 220px;
+    width: auto;
     max-width: 80%;
     margin-bottom: 20px;
-    filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.1));
-    mix-blend-mode: multiply; /* ये है वो जादुई लाइn.*/
+    mix-blend-mode: multiply;
 }
 
-.character, .cake, .flowers {
-    width: 220px;
-    max-width: 80%;
-    margin-bottom: 20px;
-    filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.1));
+/* ================================= */
+/* Custom Penguin Layout (Screen 1)  */
+/* ================================= */
+#screen1 {
+    justify-content: space-evenly; /* ये सब कुछ एक स्क्रीन में परफेक्ट सेट करेगा */
+    padding-top: 30px;
+    padding-bottom: 30px;
+    overflow: hidden; /* स्क्रीन 1 बिल्कुल स्क्रोल नहीं होगा */
 }
 
-/* Shake animation for Angry Penguin */
+.middle-part, .bottom-part {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* 1. कॉर्नर लेफ्ट ऊपर वाला पेंग्विन */
+.corner-penguin {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    height: 60px; /* छोटा साइज़ */
+    margin: 0;
+}
+
+/* 2. सेंटर वाला पेंग्विन */
+.center-penguin {
+    height: 20vh; /* स्क्रीन की हाइट के हिसाब से खुद एडजस्ट होगा */
+    max-height: 150px;
+    margin-bottom: 5px;
+}
+
+/* 3. Yes/No बटन के ऊपर वाला पेंग्विन */
+.above-btn-penguin {
+    height: 12vh;
+    max-height: 100px;
+    margin-bottom: 10px;
+}
+
+/* ================================= */
+/* Last Screen (Screen 8)            */
+/* ================================= */
+#screen8 {
+    justify-content: flex-start; /* ये स्क्रोलिंग में मदद करेगा */
+    padding-top: 80px; /* बैक बटन के लिए जगह */
+}
+
+/* Shake animation */
 .shake {
-    animation: shake 0.6s infinite;
+    animation: shake 0.5s infinite;
 }
 
 @keyframes shake {
@@ -122,6 +163,27 @@ button.heartNext {
     margin-top: 20px;
 }
 
+/* Back Button Styling (सिर्फ एरो और गोल डिज़ाइन) */
+.backBtn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #c0392b;
+    border: 1px solid #ffb6c1;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%; /* गोल बनाने के लिए */
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
 /* Coupon Grid */
 .coupon-grid {
     display: grid;
@@ -149,63 +211,5 @@ button.heartNext {
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(255, 192, 203, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.8);
-}
-
-/* Back Button Styling */
-.backBtn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #c0392b;
-    border: 1px solid #ffb6c1;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    z-index: 10;
-}
-
-.backBtn:active {
-    transform: scale(0.95);
-}
-
-/* Ensure screens maintain relative positioning for the back button */
-.screen {
-    position: relative;
-}
-/* ================================= */
-/* Custom Penguin Layout (Screen 1)  */
-/* ================================= */
-
-/* Screen 1 को रिलेटिव बनाना ज़रूरी है ताकि कॉर्नर वाला पेंगुइन सही जगह रहे */
-#screen1 {
-    position: relative; 
-}
-
-/* 1. कॉर्नर लेफ्ट ऊपर वाला पेंगुइन (penguin3.gif) */
-.corner-penguin {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 80px; /* साइज़ थोड़ा छोटा ताकि कॉर्नर में अच्छा लगे */
-    mix-blend-mode: multiply; /* सफ़ेद बैकग्राउंड गायब करने के लिए */
-}
-
-/* 2. सेंटर वाला पेंगुइन (penguin2.gif) */
-.center-penguin {
-    width: 140px; /* मेन साइज़ */
-    margin-top: 40px; /* ऊपर से थोड़ी जगह */
-    margin-bottom: 10px;
-    mix-blend-mode: multiply;
-}
-
-/* 3. Yes/No बटन के ऊपर वाला पेंगुइन (penguin1.gif) */
-.above-btn-penguin {
-    width: 100px; /* मीडियम साइज़ */
-    margin-bottom: 15px; /* बटन और पेंगुइन के बीच थोड़ी जगह */
-    mix-blend-mode: multiply;
+    margin-bottom: 20px; /* स्क्रोल करने पर नीचे जगह मिले */
 }
