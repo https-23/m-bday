@@ -215,8 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.textBaseline = "middle";
         ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
-        let isDrawing = false;
-        let scratchCount = 0;
+                let isDrawing = false;
+        let lastVibrateTime = 0; // टाइम ट्रैक करने के लिए
 
         function scratch(e) {
             if (!isDrawing) return;
@@ -229,6 +229,16 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.beginPath();
             ctx.arc(x, y, 25, 0, Math.PI * 2); 
             ctx.fill();
+
+            // ENGINEERED HAPTIC FIX: Time-based throttling
+            const now = Date.now();
+            if (now - lastVibrateTime > 60) { // हर 60ms में सिर्फ एक बार ट्रिगर होगा
+                if ("vibrate" in navigator) {
+                    navigator.vibrate(15); // 15ms की सॉलिड वाइब्रेशन
+                }
+                lastVibrateTime = now;
+            }
+        }
 
             // Sandpaper Haptic Effect
             scratchCount++;
