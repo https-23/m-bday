@@ -20,9 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const noBtn = document.getElementById("noBtn");
     const tryAgainBtn = document.getElementById("tryAgain");
 
-    if (yesBtn) {
-        yesBtn.addEventListener("click", () => showScreen("screen2"));
+        if (yesBtn) {
+        yesBtn.addEventListener("click", () => {
+            // म्यूजिक प्ले करने का कोड
+            const bgMusic = document.getElementById("bg-music");
+            if (bgMusic) {
+                bgMusic.volume = 0.5; // आवाज़ 50% रखी है ताकि कानों में ना चुभे
+                bgMusic.play().catch(error => console.log("Music play error:", error));
+            }
+            // स्क्रीन 2 पर जाने का कोड
+            showScreen("screen2");
+        });
     }
+
     if (noBtn) {
         noBtn.addEventListener("click", () => showScreen("angry"));
     }
@@ -129,3 +139,33 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(createFallingItem, 400);
 
 });
+// ===================================
+// Step 3: Typewriter Effect for Last Message
+// ===================================
+function typeWriterEffect(element, text, speed = 50) {
+    let i = 0;
+    element.innerHTML = ""; // मैसेज खाली कर दें
+    function typing() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        }
+    }
+    typing();
+}
+
+// स्क्रीन 8 पर पहुँचते ही इफेक्ट चलेगा
+const screen8 = document.getElementById("screen8");
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (screen8.classList.contains("active")) {
+            const messageElement = screen8.querySelector("p");
+            const originalText = messageElement.innerText;
+            typeWriterEffect(messageElement, originalText, 30); // 30ms की स्पीड
+            observer.disconnect(); // ताकि हर बार टाइप न हो
+        }
+    });
+});
+
+observer.observe(screen8, { attributes: true, attributeFilter: ['class'] });
