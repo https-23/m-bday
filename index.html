@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday ✨</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,14 +11,9 @@
 </head>
 <body>
 
-    <div id="floating-hearts"></div>
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div class="cloud cloud3"></div>
-    <div class="sparkles"></div>
+    <canvas id="particle-canvas"></canvas>
 
     <div id="app">
-
         <section class="screen active" id="screen1">
             <img class="character corner-penguin" src="penguin3.gif" alt="Penguin 3">
             <div class="middle-part">
@@ -50,7 +45,6 @@
 
         <section class="screen" id="screen3">
             <button class="backBtn" data-back="screen2">⬅️</button>
-            <div id="confetti"></div>
             <h1 class="birthday">HAPPY<br>BIRTHDAY 🎂</h1>
             <img class="cake" src="birthday.penguin.gif" alt="Cake">
             <button class="heartNext">❤️</button>
@@ -66,10 +60,7 @@
                 <img class="character side-penguin" src="penguin5.gif" alt="Small Penguin">
                 <div class="envelope">
                     <div class="letter">
-                        <p>
-                            Happy Birthday! 🌸<br>
-                            I wanted to make something different that could bring a big smile to your face today. Hope you like this little surprise!
-                        </p>
+                        <p>Happy Birthday! 🌸<br>I wanted to make something different that could bring a big smile to your face today. Hope you like this little surprise!</p>
                     </div>
                     <div class="envelope-front"></div>
                 </div>
@@ -78,9 +69,9 @@
             <p class="click-hint">Tap on envelope to open 👆</p>
             <button class="next" id="envelopeNextBtn" style="display: none;">Next →</button>
         </section>
+
         <section class="screen" id="screen5">
             <button class="backBtn" data-back="screen4">⬅️</button>
-            
             <img class="character" src="penguin8.gif" alt="Penguin 8" style="height: 110px; margin-top: 10px; margin-bottom: 5px;">
             
             <h1>Special Messages ✨</h1>
@@ -114,36 +105,31 @@
         <section class="screen" id="screen7">
             <button class="backBtn" data-back="screen6">⬅️</button>
             <img class="character" src="sadpenguin.gif" alt="Sad Penguin" style="width: 250px; margin-bottom: 20px;">
-            <h2>Aapki Photos nahi hai is me ,sorry! 🥺</h2>
+            <h2>Aapki Photos nahi hai is me, sorry! 🥺</h2>
             <button class="heartNext">❤️</button>
         </section>
 
         <section class="screen" id="screen8">
             <button class="backBtn" data-back="screen7">⬅️</button>
             <div class="glass">
-                <img class="character" src="love-penguin.gif" alt="Penguin celebration" style="height: 110px; margin-top: 10px; margin-bottom: 5px;">
+                <img class="character" src="love-penguin.gif" alt="Penguin celebration" style="height: 110px; opacity: 0.5; margin-top: 10px; margin-bottom: 5px;">
             
                 <h1>My Wish For You ✨</h1>
-                <p>
+                <p id="final-message">
                     Happy Birthday! 🎉<br><br>
-                    I made this little website because I wanted to do something unique and hopefully make you smile today. I hope today brings you calm, lots of smiles, and the warm feeling of knowing how special you are. <br><br>
-                    I sincerely wish this year brings you happiness, peace, good health, success, and beautiful memories. Keep smiling, always.
-                    <br><br>Happiest Birthday once again! 🌸
+                    I made this little website because I wanted to do something unique and hopefully make you smile today. I hope today brings you calm, lots of smiles, and the warm feeling of knowing how special you are.<br><br>
+                    I sincerely wish this year brings you happiness, peace, good health, success, and beautiful memories. Keep smiling, always.<br><br>Happiest Birthday once again! 🌸
                 </p>
                 <h2>Take Care ✨</h2>
             </div>
         </section>
 
     </div>
-    <!-- Background Music -->
+
     <audio id="bg-music" loop>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
-    <script src="script.js"></script>
-</body>
-</html>
-    
     <script src="script.js"></script>
 </body>
 </html>
