@@ -23,14 +23,13 @@ body {
     background-color: transparent;
 }
 
-/* अगर बैकग्राउंड में कोई अदृश्य चीज़ है, तो वो ब्लॉक नहीं करेगी */
 #floating-hearts, .cloud, .sparkles {
     position: absolute;
     pointer-events: none;
     z-index: 0;
 }
 
-/* Screens */
+/* Screens - Yahan se z-index hata diya hai taaki color mix ho sake */
 .screen {
     display: none; 
     flex-direction: column;
@@ -42,7 +41,6 @@ body {
     box-sizing: border-box;
     overflow-y: auto; 
     position: relative;
-    z-index: 1;
 }
 
 .screen.active {
@@ -70,15 +68,13 @@ p {
     color: #5d4037;
 }
 
-/* ================================= */
-/* ULTIMATE CLICK FIX FOR ALL IMAGES */
-/* ================================= */
+/* ULTIMATE CLICK & COLOR FIX */
 .character, .cake, .flowers {
     width: auto;
     max-width: 80%;
     margin-bottom: 20px;
-    mix-blend-mode: multiply;
-    pointer-events: none; /* यह जादू है! अब कोई भी इमेज बटन को ब्लॉक नहीं करेगी */
+    mix-blend-mode: multiply; /* White background gayab karne ke liye */
+    pointer-events: none; /* Ye image ko click block karne se rokega */
 }
 
 /* ================================= */
@@ -104,10 +100,9 @@ p {
     align-items: center;
     width: 100%;
     position: relative;
-    z-index: 1000; /* ये पूरे बटन सेक्शन को सबसे आगे लाएगा */
 }
 
-/* 1. कॉर्नर लेफ्ट ऊपर वाला पेंग्विन */
+/* 1. Corner left upar wala penguin */
 .corner-penguin {
     position: absolute;
     top: 15px;
@@ -116,14 +111,14 @@ p {
     margin: 0;
 }
 
-/* 2. सेंटर वाला पेंग्विन */
+/* 2. Center wala penguin */
 .center-penguin {
     height: 20vh; 
     max-height: 150px;
     margin-bottom: 5px;
 }
 
-/* 3. Yes/No बटन के ऊपर वाला पेंग्विन */
+/* 3. Yes/No button ke upar wala penguin */
 .above-btn-penguin {
     height: 12vh;
     max-height: 100px;
@@ -156,7 +151,7 @@ p {
     display: flex;
     gap: 15px;
     position: relative; 
-    z-index: 9999; /* बटन्स को सबसे ऊपर रखा है */
+    z-index: 9999; /* Buttons hamesha sabse upar rahenge aur click honge */
 }
 
 button {
@@ -171,7 +166,7 @@ button {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(255, 117, 140, 0.4);
     transition: transform 0.2s, box-shadow 0.2s;
-    pointer-events: auto; /* बटन क्लिक होने चाहिए */
+    pointer-events: auto; 
 }
 
 button:active {
@@ -246,7 +241,7 @@ button.heartNext {
     height: 180px;
     margin: 30px auto 10px auto;
     cursor: pointer;
-    pointer-events: auto; /* लिफाफे पर क्लिक होना चाहिए */
+    pointer-events: auto; 
 }
 
 .envelope {
