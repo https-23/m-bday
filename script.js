@@ -171,15 +171,24 @@ const observer = new MutationObserver((mutations) => {
 observer.observe(screen8, { attributes: true, attributeFilter: ['class'] });
 canvas.width
 // ===================================
-// Step 4: Scratch Card Logic
+// Step 4: Scratch Card Logic (100% FIXED)
 // ===================================
 function initScratchCards() {
     const canvases = document.querySelectorAll('.scratch-pad');
     canvases.forEach(canvas => {
-        const ctx = canvas.getContext('2d');
-        canvas.width = canvas.parentElement.offsetWidth;
-        canvas.height = canvas.parentElement.offsetHeight;
+        // Agar pehle se draw ho chuka hai toh wapas draw nahi karna
+        if (canvas.dataset.drawn) return;
 
+        // Container ka real size lena
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        // Agar screen abhi hide hai (width 0 hai) toh draw mat karo, ruk jao
+        if (canvas.width === 0) return;
+
+        const ctx = canvas.getContext('2d');
+        
         // सिल्वर कलर का कवर
         ctx.fillStyle = '#b3b3b3'; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -191,47 +200,50 @@ function initScratchCards() {
         ctx.textBaseline = "middle";
         ctx.fillText("Scratch Me! ✨", canvas.width / 2, canvas.height / 2);
 
+        // Draw ho gaya, mark kar do
+        canvas.dataset.drawn = "true";
+
         let isDrawing = false;
 
         function scratch(e) {
             if (!isDrawing) return;
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
+            e.preventDefault(); // Ye scratch karte waqt screen ko hilaane se rokega
+            const canvasRect = canvas.getBoundingClientRect();
             let x, y;
             
-            if (e.touches) {
-                x = e.touches[0].clientX - rect.left;
-                y = e.touches[0].clientY - rect.top;
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX - canvasRect.left;
+                y = e.touches[0].clientY - canvasRect.top;
             } else {
-                x = e.clientX - rect.left;
-                y = e.clientY - rect.top;
+                x = e.clientX - canvasRect.left;
+                y = e.clientY - canvasRect.top;
             }
 
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
-            ctx.arc(x, y, 18, 0, Math.PI * 2); 
+            ctx.arc(x, y, 20, 0, Math.PI * 2); // 20 size ka brush
             ctx.fill();
         }
 
+        // Mouse (PC) events
         canvas.addEventListener('mousedown', () => isDrawing = true);
         canvas.addEventListener('mouseup', () => isDrawing = false);
         canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('touchstart', () => isDrawing = true);
+        
+        // Touch (Mobile) events
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            scratch(e); // Touch karte hi scratch hona shuru
+        }, {passive: false});
         canvas.addEventListener('touchend', () => isDrawing = false);
         canvas.addEventListener('touchmove', scratch, {passive: false});
     });
 }
 
-const screen5Element = document.getElementById("screen5");
-if (screen5Element) {
-    const observerScratch = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (screen5Element.classList.contains("active") && !screen5Element.dataset.scratched) {
-                setTimeout(initScratchCards, 100); 
-                screen5Element.dataset.scratched = "true"; 
-            }
-        });
-    });
-    observerScratch.observe(screen5Element, { attributes: true, attributeFilter: ['class'] });
-}
-
+// Ye smart loop har thodi der me check karega ki Screen 5 khul gayi kya
+setInterval(() => {
+    const screen5 = document.getElementById("screen5");
+    if (screen5 && screen5.classList.contains("active")) {
+        initScratchCards();
+    }
+}, 500); // 500 milliseconds (आधा सेकंड)
