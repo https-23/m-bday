@@ -355,3 +355,15 @@ button.heartNext {
     cursor: pointer;
     touch-action: none;
 }
+/* ================================= */
+/* Fix: Screen 5 Scrolling & Design  */
+/* ================================= */
+#screen5 {
+    justify-content: flex-start; /* Ye scroll ko chalu karega */
+    padding-top: 70px; /* Upar back button ke liye jagah */
+    padding-bottom: 50px; /* Neeche heart button ke liye jagah */
+}
+
+.coupon-grid {
+    margin-bottom: 30px; /* Buttons ke beech me gap */
+}
