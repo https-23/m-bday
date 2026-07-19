@@ -171,79 +171,82 @@ const observer = new MutationObserver((mutations) => {
 observer.observe(screen8, { attributes: true, attributeFilter: ['class'] });
 canvas.width
 // ===================================
-// Step 4: Scratch Card Logic (100% FIXED)
+// Step 4: 3D Pop-up Scratch Logic
 // ===================================
-function initScratchCards() {
-    const canvases = document.querySelectorAll('.scratch-pad');
-    canvases.forEach(canvas => {
-        // Agar pehle se draw ho chuka hai toh wapas draw nahi karna
-        if (canvas.dataset.drawn) return;
+const messages = {
+    1: `<strong style="font-size: 1.4rem; color: #c0392b;">🎂 Happy Birthday!</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>`,
+    2: `<strong style="font-size: 1.4rem; color: #c0392b;">💛 A Small Apology</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>`,
+    3: `<strong style="font-size: 1.4rem; color: #c0392b;">💌 Just One Thing</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">You don't have to reply. I just hope you read this. That's enough for me.</span>`,
+    4: `<strong style="font-size: 1.4rem; color: #c0392b;">🌸 Take Care</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">No matter what, I genuinely wish the best for you. Stay happy, stay safe, and enjoy your special day.</span>`
+};
 
-        // Container ka real size lena
-        const rect = canvas.parentElement.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+const miniCards = document.querySelectorAll('.mini-card');
+const modal = document.getElementById('scratch-modal');
+const modalContent = document.getElementById('modal-message-content');
+const closeModal = document.getElementById('close-modal');
+const canvas = document.getElementById('popup-scratch-pad');
 
-        // Agar screen abhi hide hai (width 0 hai) toh draw mat karo, ruk jao
-        if (canvas.width === 0) return;
-
-        const ctx = canvas.getContext('2d');
+miniCards.forEach(card => {
+    card.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        modalContent.innerHTML = messages[id];
+        modal.classList.add('show');
         
-        // सिल्वर कलर का कवर
-        ctx.fillStyle = '#b3b3b3'; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 300ms वेट करके सिल्वर लेयर बनाओ (ताकि एनीमेशन स्मूथ हो)
+        setTimeout(initPopupScratchCard, 300);
+    });
+});
 
-        // ऊपर "Scratch Me!" का टेक्स्ट
-        ctx.font = "bold 18px Arial";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("Scratch Me! ✨", canvas.width / 2, canvas.height / 2);
+closeModal.addEventListener('click', () => {
+    modal.classList.remove('show');
+});
 
-        // Draw ho gaya, mark kar do
-        canvas.dataset.drawn = "true";
+function initPopupScratchCard() {
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
 
-        let isDrawing = false;
+    // सिल्वर कलर
+    ctx.fillStyle = '#b3b3b3';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        function scratch(e) {
-            if (!isDrawing) return;
-            e.preventDefault(); // Ye scratch karte waqt screen ko hilaane se rokega
-            const canvasRect = canvas.getBoundingClientRect();
-            let x, y;
-            
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX - canvasRect.left;
-                y = e.touches[0].clientY - canvasRect.top;
-            } else {
-                x = e.clientX - canvasRect.left;
-                y = e.clientY - canvasRect.top;
-            }
+    ctx.font = "bold 24px Arial";
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Scratch Me! ✨", canvas.width / 2, canvas.height / 2);
 
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(x, y, 20, 0, Math.PI * 2); // 20 size ka brush
-            ctx.fill();
+    let isDrawing = false;
+
+    function scratch(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const canvasRect = canvas.getBoundingClientRect();
+        let x, y;
+        
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX - canvasRect.left;
+            y = e.touches[0].clientY - canvasRect.top;
+        } else {
+            x = e.clientX - canvasRect.left;
+            y = e.clientY - canvasRect.top;
         }
 
-        // Mouse (PC) events
-        canvas.addEventListener('mousedown', () => isDrawing = true);
-        canvas.addEventListener('mouseup', () => isDrawing = false);
-        canvas.addEventListener('mousemove', scratch);
-        
-        // Touch (Mobile) events
-        canvas.addEventListener('touchstart', (e) => {
-            isDrawing = true;
-            scratch(e); // Touch karte hi scratch hona shuru
-        }, {passive: false});
-        canvas.addEventListener('touchend', () => isDrawing = false);
-        canvas.addEventListener('touchmove', scratch, {passive: false});
-    });
-}
-
-// Ye smart loop har thodi der me check karega ki Screen 5 khul gayi kya
-setInterval(() => {
-    const screen5 = document.getElementById("screen5");
-    if (screen5 && screen5.classList.contains("active")) {
-        initScratchCards();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2); // ब्रश का साइज़
+        ctx.fill();
     }
-}, 500); // 500 milliseconds (आधा सेकंड)
+
+    canvas.addEventListener('mousedown', () => isDrawing = true);
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mousemove', scratch);
+    
+    canvas.addEventListener('touchstart', (e) => {
+        isDrawing = true;
+        scratch(e);
+    }, {passive: false});
+    canvas.addEventListener('touchend', () => isDrawing = false);
+    canvas.addEventListener('touchmove', scratch, {passive: false});
+}
