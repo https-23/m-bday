@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. सारे स्क्रीन्स को सिलेक्ट करो
     const screens = document.querySelectorAll(".screen");
     
-    // स्क्रीन बदलने का फंक्शन
+    // स्क्रीन बदलने का फंक्शन (इसमें लिफ़ाफ़े का Auto-Reset लगाया है)
     function showScreen(screenId) {
         screens.forEach(screen => {
             screen.classList.remove("active");
@@ -11,10 +10,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (targetScreen) {
             targetScreen.classList.add("active");
         }
+
+        // लिफ़ाफ़ा (Envelope) हमेशा बंद रहे, उसके लिए रिसेट
+        if (screenId === "screen4") {
+            const envelopeWrapper = document.getElementById("envelope-wrapper");
+            const envelopeNextBtn = document.getElementById("envelopeNextBtn");
+            const clickHint = document.querySelector(".click-hint");
+            
+            if (envelopeWrapper) envelopeWrapper.classList.remove("open");
+            if (envelopeNextBtn) envelopeNextBtn.style.display = "none";
+            if (clickHint) clickHint.style.display = "block";
+        }
     }
 
     // ===================================
-    // Starting Page Buttons (Screen 1) & Music
+    // Starting Page Buttons & Music
     // ===================================
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
@@ -22,10 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (yesBtn) {
         yesBtn.addEventListener("click", () => {
-            // म्यूजिक प्ले करने का कोड
             const bgMusic = document.getElementById("bg-music");
             if (bgMusic) {
-                bgMusic.volume = 0.5; // आवाज़ 50%
+                bgMusic.volume = 0.5;
                 bgMusic.play().catch(error => console.log("Music play error:", error));
             }
             showScreen("screen2");
@@ -145,13 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (screen8) {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                // Check if screen8 is active and hasn't been typed yet
                 if (screen8.classList.contains("active") && !screen8.dataset.typed) {
                     const messageElement = screen8.querySelector("p");
                     if (messageElement) {
                         const originalText = messageElement.innerText;
                         typeWriterEffect(messageElement, originalText, 30); 
-                        screen8.dataset.typed = "true"; // Prevent re-typing
+                        screen8.dataset.typed = "true"; 
                     }
                 }
             });
@@ -182,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalContent.innerHTML = messages[id];
                 modal.classList.add('show');
                 
-                // 300ms वेट करके सिल्वर लेयर बनाओ
                 setTimeout(initPopupScratchCard, 300);
             });
         });
@@ -241,4 +248,5 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.addEventListener('touchmove', scratch, {passive: false});
     }
 
-}); // DOMContentLoaded ख़त्म (इसे भूलना मत!)
+});
+                
