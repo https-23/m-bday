@@ -98,4 +98,34 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+        // ===================================
+    // Floating Hearts / Flowers Effect
+    // ===================================
+    function createFallingItem() {
+        const container = document.getElementById("floating-hearts");
+        if (!container) return;
+
+        const item = document.createElement("div");
+        item.classList.add("falling-item");
+
+        // क्या गिरेगा? (फूल, दिल, सितारे)
+        const shapes = ["🌸", "💖", "✨", "🌸", "🤍"];
+        item.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
+
+        // स्क्रीन पर रैंडम जगह से गिरेंगे
+        item.style.left = Math.random() * 100 + "vw";
+        item.style.animationDuration = Math.random() * 3 + 3 + "s"; // 3 से 6 सेकंड की स्पीड
+        item.style.fontSize = Math.random() * 10 + 15 + "px"; // साइज़ छोटा-बड़ा होगा
+
+        container.appendChild(item);
+
+        // स्क्रीन से बाहर जाने के बाद डिलीट हो जाएंगे ताकि वेबसाइट हैंग ना हो
+        setTimeout(() => {
+            item.remove();
+        }, 6000);
+    }
+
+    // हर 400 मिलीसेकंड में एक नया फूल/दिल गिरेगा
+    setInterval(createFallingItem, 400);
+
 });
