@@ -21,13 +21,11 @@
 
         <section class="screen active" id="screen1">
             <img class="character corner-penguin" src="penguin3.gif" alt="Penguin 3">
-            
             <div class="middle-part">
                 <img class="character center-penguin" src="penguin2.gif" alt="Penguin 2">
                 <h1>I made something<br>special for u ✨</h1>
                 <p>do u wanna see it?</p>
             </div>
-            
             <div class="bottom-part">
                 <img class="character above-btn-penguin" src="penguin1.gif" alt="Penguin 1">
                 <div class="buttons">
@@ -61,15 +59,24 @@
         <section class="screen" id="screen4">
             <button class="backBtn" data-back="screen3">⬅️</button>
             <h1>Open Me, One Surprise at a Time 💌</h1>
-            <div id="envelope">
-                <div id="letter">
-                    <p>
-                        Happy Birthday! 🌸<br><br>
-                        I wanted to make something different that could bring a big smile to your face today. Hope you like this little surprise!
-                    </p>
+            
+            <div class="envelope-wrapper" id="envelope-wrapper">
+                <div class="envelope">
+                    <div class="letter">
+                        <p>
+                            Happy Birthday! 🌸<br>
+                            I wanted to make something different that could bring a big smile to your face today. Hope you like this little surprise!
+                        </p>
+                    </div>
+                    <div class="envelope-front"></div>
                 </div>
             </div>
-            <button class="next">Next →</button>
+            
+            <p class="click-hint">Tap on envelope to open 👆</p>
+            
+            <img class="character side-penguin" src="penguin5.gif" alt="Small Penguin">
+            
+            <button class="next" id="envelopeNextBtn" style="display: none;">Next →</button>
         </section>
 
         <section class="screen" id="screen5">
