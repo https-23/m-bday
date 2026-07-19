@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const screens = document.querySelectorAll(".screen");
     
-    // स्क्रीन बदलने का फंक्शन (इसमें लिफ़ाफ़े का Auto-Reset लगाया है)
+    // --- 1. CORE STATE MANAGEMENT ---
+    const screens = document.querySelectorAll(".screen");
+    let typeWriterTriggered = false;
+    
     function showScreen(screenId) {
-        screens.forEach(screen => {
-            screen.classList.remove("active");
-        });
+        screens.forEach(screen => screen.classList.remove("active"));
         const targetScreen = document.getElementById(screenId);
         if (targetScreen) {
             targetScreen.classList.add("active");
         }
 
-        // लिफ़ाफ़ा (Envelope) हमेशा बंद रहे, उसके लिए रिसेट
+        // Auto-Reset Envelope when navigating back/forth
         if (screenId === "screen4") {
             const envelopeWrapper = document.getElementById("envelope-wrapper");
             const envelopeNextBtn = document.getElementById("envelopeNextBtn");
@@ -21,214 +21,196 @@ document.addEventListener("DOMContentLoaded", () => {
             if (envelopeNextBtn) envelopeNextBtn.style.display = "none";
             if (clickHint) clickHint.style.display = "block";
         }
+
+        // Trigger Typewriter on Screen 8 only once
+        if (screenId === "screen8" && !typeWriterTriggered) {
+            triggerTypewriter();
+            typeWriterTriggered = true;
+        }
     }
 
-    // ===================================
-    // Starting Page Buttons & Music
-    // ===================================
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const tryAgainBtn = document.getElementById("tryAgain");
-
-    if (yesBtn) {
-        yesBtn.addEventListener("click", () => {
-            const bgMusic = document.getElementById("bg-music");
-            if (bgMusic) {
-                bgMusic.volume = 0.5;
-                bgMusic.play().catch(error => console.log("Music play error:", error));
-            }
-            showScreen("screen2");
-        });
-    }
-    if (noBtn) {
-        noBtn.addEventListener("click", () => showScreen("angry"));
-    }
-    if (tryAgainBtn) {
-        tryAgainBtn.addEventListener("click", () => showScreen("screen1"));
-    }
+    // --- 2. EVENT LISTENERS (NAVIGATION) ---
+    document.getElementById("yesBtn")?.addEventListener("click", () => {
+        const bgMusic = document.getElementById("bg-music");
+        if (bgMusic) {
+            bgMusic.volume = 0.5;
+            bgMusic.play().catch(e => console.log("Audio permission pending until user interaction."));
+        }
+        showScreen("screen2");
+    });
     
-    // ===================================
-    // Screen 2 Transition
-    // ===================================
-    const screen2 = document.getElementById("screen2");
-    if (screen2) {
-        screen2.addEventListener("click", (e) => {
-            if(!e.target.classList.contains("backBtn")) {
-                showScreen("screen3");
-            }
-        });
-    }
+    document.getElementById("noBtn")?.addEventListener("click", () => showScreen("angry"));
+    document.getElementById("tryAgain")?.addEventListener("click", () => showScreen("screen1"));
 
-    // ===================================
-    // Next Buttons (Heart Icons)
-    // ===================================
-    const s3Next = document.querySelector("#screen3 .heartNext");
-    if (s3Next) s3Next.addEventListener("click", () => showScreen("screen4"));
+    // Screen 2 Anywhere Click (Except Back Button)
+    document.getElementById("screen2")?.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("backBtn")) showScreen("screen3");
+    });
 
-    const s5Next = document.querySelector("#screen5 .heartNext");
-    if (s5Next) s5Next.addEventListener("click", () => showScreen("screen6"));
+    // Next Buttons Mapping
+    const nextMap = {
+        "#screen3 .heartNext": "screen4",
+        "#screen5 .heartNext": "screen6",
+        "#screen6 .heartNext": "screen7",
+        "#screen7 .heartNext": "screen8"
+    };
 
-    const s6Next = document.querySelector("#screen6 .heartNext");
-    if (s6Next) s6Next.addEventListener("click", () => showScreen("screen7"));
+    Object.keys(nextMap).forEach(selector => {
+        document.querySelector(selector)?.addEventListener("click", () => showScreen(nextMap[selector]));
+    });
 
-    const s7Next = document.querySelector("#screen7 .heartNext");
-    if (s7Next) s7Next.addEventListener("click", () => showScreen("screen8"));
-
-    // ===================================
-    // Screen 4 (Envelope Animation)
-    // ===================================
-    const envelopeWrapper = document.getElementById("envelope-wrapper");
-    const envelopeNextBtn = document.getElementById("envelopeNextBtn");
-    const clickHint = document.querySelector(".click-hint");
-    
-    if (envelopeWrapper) {
-        envelopeWrapper.addEventListener("click", () => {
-            envelopeWrapper.classList.add("open");
-            if (clickHint) clickHint.style.display = "none"; 
-            
-            if (envelopeNextBtn) {
-                setTimeout(() => {
-                    envelopeNextBtn.style.display = "inline-block";
-                }, 1000);
-            }
-        });
-    }
-
-    if (envelopeNextBtn) {
-        envelopeNextBtn.addEventListener("click", () => showScreen("screen5"));
-    }
-
-    // ===================================
-    // Back Buttons Logic
-    // ===================================
-    const backButtons = document.querySelectorAll(".backBtn");
-    backButtons.forEach(btn => {
+    // Back Buttons
+    document.querySelectorAll(".backBtn").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            e.stopPropagation(); 
-            const targetScreen = btn.getAttribute("data-back");
-            if (targetScreen) {
-                showScreen(targetScreen);
-            }
+            e.stopPropagation();
+            showScreen(btn.getAttribute("data-back"));
         });
     });
 
-    // ===================================
-    // Step 1: Floating Hearts / Flowers
-    // ===================================
-    function createFallingItem() {
-        const container = document.getElementById("floating-hearts");
-        if (!container) return;
-
-        const item = document.createElement("div");
-        item.classList.add("falling-item");
-        const shapes = ["🌸", "💖", "✨", "🌸", "🤍"];
-        item.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
-        item.style.left = Math.random() * 100 + "vw";
-        item.style.animationDuration = Math.random() * 3 + 3 + "s";
-        item.style.fontSize = Math.random() * 10 + 15 + "px";
-
-        container.appendChild(item);
-        setTimeout(() => {
-            item.remove();
-        }, 6000);
+    // --- 3. ENVELOPE LOGIC ---
+    const envelopeWrapper = document.getElementById("envelope-wrapper");
+    if (envelopeWrapper) {
+        envelopeWrapper.addEventListener("click", () => {
+            envelopeWrapper.classList.add("open");
+            const clickHint = document.querySelector(".click-hint");
+            if (clickHint) clickHint.style.display = "none"; 
+            
+            setTimeout(() => {
+                const btn = document.getElementById("envelopeNextBtn");
+                if(btn) btn.style.display = "inline-block";
+            }, 1000);
+        });
     }
-    setInterval(createFallingItem, 400);
+    document.getElementById("envelopeNextBtn")?.addEventListener("click", () => showScreen("screen5"));
 
-    // ===================================
-    // Step 3: Typewriter Effect
-    // ===================================
-    function typeWriterEffect(element, text, speed = 50) {
+
+    // --- 4. HIGH PERFORMANCE PARTICLE SYSTEM (Canvas) ---
+    const pCanvas = document.getElementById("particle-canvas");
+    const pCtx = pCanvas.getContext("2d");
+    let particles = [];
+    const emojis = ["🌸", "💖", "✨", "🌸", "🤍"];
+
+    function resizeCanvas() {
+        pCanvas.width = window.innerWidth;
+        pCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.reset();
+            this.y = Math.random() * pCanvas.height; // Spread out initially
+        }
+        reset() {
+            this.x = Math.random() * pCanvas.width;
+            this.y = -50;
+            this.size = Math.random() * 15 + 15; // 15px to 30px
+            this.speed = Math.random() * 2 + 1.5;
+            this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = (Math.random() - 0.5) * 2;
+        }
+        update() {
+            this.y += this.speed;
+            this.rotation += this.rotationSpeed;
+            if (this.y > pCanvas.height + 50) this.reset();
+        }
+        draw() {
+            pCtx.save();
+            pCtx.translate(this.x, this.y);
+            pCtx.rotate(this.rotation * Math.PI / 180);
+            pCtx.font = `${this.size}px Arial`;
+            pCtx.textAlign = "center";
+            pCtx.textBaseline = "middle";
+            pCtx.globalAlpha = 0.6; // Slightly transparent
+            pCtx.fillText(this.emoji, 0, 0);
+            pCtx.restore();
+        }
+    }
+
+    // Initialize 30 particles
+    for (let i = 0; i < 30; i++) particles.push(new Particle());
+
+    function animateParticles() {
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles(); // Start engine
+
+
+    // --- 5. TYPEWRITER EFFECT ---
+    function triggerTypewriter() {
+        const pElement = document.getElementById("final-message");
+        if (!pElement) return;
+        const text = pElement.innerHTML.replace(/<br>/g, '\n'); // Maintain breaks
+        pElement.innerHTML = "";
         let i = 0;
-        element.innerHTML = ""; 
+        
         function typing() {
             if (i < text.length) {
-                element.innerHTML += text.charAt(i);
+                let char = text.charAt(i);
+                if (char === '\n') {
+                    pElement.innerHTML += "<br>";
+                } else {
+                    pElement.innerHTML += char;
+                }
                 i++;
-                setTimeout(typing, speed);
+                setTimeout(typing, 35); // Speed
             }
         }
         typing();
     }
 
-    const screen8 = document.getElementById("screen8");
-    if (screen8) {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (screen8.classList.contains("active") && !screen8.dataset.typed) {
-                    const messageElement = screen8.querySelector("p");
-                    if (messageElement) {
-                        const originalText = messageElement.innerText;
-                        typeWriterEffect(messageElement, originalText, 30); 
-                        screen8.dataset.typed = "true"; 
-                    }
-                }
-            });
-        });
-        observer.observe(screen8, { attributes: true, attributeFilter: ['class'] });
-    }
 
-    // ===================================
-    // Step 4: 3D Pop-up Scratch Logic
-    // ===================================
+    // --- 6. SCRATCH CARD SYSTEM ---
     const messages = {
-        1: `<strong style="font-size: 1.4rem; color: #c0392b;">🎂 Happy Birthday!</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>`,
-        2: `<strong style="font-size: 1.4rem; color: #c0392b;">💛 A Small Apology</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>`,
-        3: `<strong style="font-size: 1.4rem; color: #c0392b;">💌 Just One Thing</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">You don't have to reply. I just hope you read this. That's enough for me.</span>`,
-        4: `<strong style="font-size: 1.4rem; color: #c0392b;">🌸 Take Care</strong><br><br><span style="font-size: 1.1rem; color: #5d4037;">No matter what, I genuinely wish the best for you. Stay happy, stay safe, and enjoy your special day.</span>`
+        1: `<strong style="font-size: 1.4rem; color: var(--primary-color);">🎂 Happy Birthday!</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>`,
+        2: `<strong style="font-size: 1.4rem; color: var(--primary-color);">💛 A Small Apology</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>`,
+        3: `<strong style="font-size: 1.4rem; color: var(--primary-color);">💌 Just One Thing</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">You don't have to reply. I just hope you read this. That's enough for me.</span>`,
+        4: `<strong style="font-size: 1.4rem; color: var(--primary-color);">🌸 Take Care</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">No matter what, I genuinely wish the best for you. Stay happy, stay safe, and enjoy your special day.</span>`
     };
 
-    const miniCards = document.querySelectorAll('.mini-card');
     const modal = document.getElementById('scratch-modal');
     const modalContent = document.getElementById('modal-message-content');
-    const closeModal = document.getElementById('close-modal');
-    const canvas = document.getElementById('popup-scratch-pad');
-
-    if (miniCards.length > 0 && modal && modalContent && closeModal && canvas) {
-        miniCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const id = card.getAttribute('data-id');
-                modalContent.innerHTML = messages[id];
-                modal.classList.add('show');
-                
-                setTimeout(initPopupScratchCard, 300);
-            });
+    const scratchCanvas = document.getElementById('popup-scratch-pad');
+    
+    document.querySelectorAll('.mini-card').forEach(card => {
+        card.addEventListener('click', () => {
+            modalContent.innerHTML = messages[card.getAttribute('data-id')];
+            modal.classList.add('show');
+            setTimeout(initPopupScratchCard, 300); // Wait for modal animation
         });
+    });
 
-        closeModal.addEventListener('click', () => {
-            modal.classList.remove('show');
-        });
-    }
+    document.getElementById('close-modal')?.addEventListener('click', () => modal.classList.remove('show'));
 
     function initPopupScratchCard() {
-        const ctx = canvas.getContext('2d');
-        const rect = canvas.parentElement.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        const ctx = scratchCanvas.getContext('2d');
+        const rect = scratchCanvas.parentElement.getBoundingClientRect();
+        
+        // Exact pixel mapping for sharpness
+        scratchCanvas.width = rect.width;
+        scratchCanvas.height = rect.height;
 
         ctx.fillStyle = '#b3b3b3';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
 
-        ctx.font = "bold 24px Arial";
+        ctx.font = "bold 24px 'Fredoka', sans-serif";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Scratch Me! ✨", canvas.width / 2, canvas.height / 2);
+        ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
         let isDrawing = false;
 
         function scratch(e) {
             if (!isDrawing) return;
             e.preventDefault();
-            const canvasRect = canvas.getBoundingClientRect();
-            let x, y;
-            
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX - canvasRect.left;
-                y = e.touches[0].clientY - canvasRect.top;
-            } else {
-                x = e.clientX - canvasRect.left;
-                y = e.clientY - canvasRect.top;
-            }
+            const canvasRect = scratchCanvas.getBoundingClientRect();
+            let x = (e.touches ? e.touches[0].clientX : e.clientX) - canvasRect.left;
+            let y = (e.touches ? e.touches[0].clientY : e.clientY) - canvasRect.top;
 
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
@@ -236,17 +218,12 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fill();
         }
 
-        canvas.addEventListener('mousedown', () => isDrawing = true);
-        canvas.addEventListener('mouseup', () => isDrawing = false);
-        canvas.addEventListener('mousemove', scratch);
+        scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
+        scratchCanvas.addEventListener('mouseup', () => isDrawing = false);
+        scratchCanvas.addEventListener('mousemove', scratch);
         
-        canvas.addEventListener('touchstart', (e) => {
-            isDrawing = true;
-            scratch(e);
-        }, {passive: false});
-        canvas.addEventListener('touchend', () => isDrawing = false);
-        canvas.addEventListener('touchmove', scratch, {passive: false});
+        scratchCanvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+        scratchCanvas.addEventListener('touchend', () => isDrawing = false);
+        scratchCanvas.addEventListener('touchmove', scratch, {passive: false});
     }
-
 });
-                
