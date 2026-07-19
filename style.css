@@ -108,6 +108,7 @@ p {
     height: 12vh;
     max-height: 100px;
     margin-bottom: 10px;
+    pointer-events: none; /* फिक्स: पेंग्विन बटन का क्लिक नहीं रोकेगा */
 }
 
 /* ================================= */
@@ -135,6 +136,8 @@ p {
 .buttons {
     display: flex;
     gap: 15px;
+    position: relative; /* फिक्स: बटन आगे लाने के लिए */
+    z-index: 999;       /* फिक्स: बटन को सबसे ऊपर सेट कर दिया */
 }
 
 button {
