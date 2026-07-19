@@ -77,16 +77,47 @@
             <button class="next" id="envelopeNextBtn" style="display: none;">Next →</button>
         </section>
 
-        <section class="screen" id="screen5">
+                <section class="screen" id="screen5">
             <button class="backBtn" data-back="screen4">⬅️</button>
-            <h1>Birthday coupons 🎁</h1>
-            <p>Use them freely... valid anytime!</p>
-            <div class="coupon-grid">
-                <div class="coupon">🌸 All 'YES' hour</div>
-                <div class="coupon">🎬 Movie Recommendation</div>
-                <div class="coupon">⭐ Your wish</div>
-                <div class="coupon">☕ A Treat Someday</div>
+            <h1>Special Messages ✨</h1>
+            <p>Scratch to read them...</p>
+            
+            <div class="coupon-grid" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                
+                <div class="coupon-container" style="min-height: 120px;">
+                    <div class="coupon" style="flex-direction: column; padding: 15px; justify-content: center;">
+                        <strong style="font-size: 1.1rem; color: #c0392b;">🎂 Happy Birthday!</strong>
+                        <span style="font-size: 0.9rem; font-weight: 500; margin-top: 8px; color: #5d4037; line-height: 1.4;">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>
+                    </div>
+                    <canvas class="scratch-pad"></canvas>
+                </div>
+                
+                <div class="coupon-container" style="min-height: 120px;">
+                    <div class="coupon" style="flex-direction: column; padding: 15px; justify-content: center;">
+                        <strong style="font-size: 1.1rem; color: #c0392b;">💛 A Small Apology</strong>
+                        <span style="font-size: 0.9rem; font-weight: 500; margin-top: 8px; color: #5d4037; line-height: 1.4;">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>
+                    </div>
+                    <canvas class="scratch-pad"></canvas>
+                </div>
+                
+                <div class="coupon-container" style="min-height: 120px;">
+                    <div class="coupon" style="flex-direction: column; padding: 15px; justify-content: center;">
+                        <strong style="font-size: 1.1rem; color: #c0392b;">💌 Just One Thing</strong>
+                        <span style="font-size: 0.9rem; font-weight: 500; margin-top: 8px; color: #5d4037; line-height: 1.4;">You don't have to reply. I just hope you read this. That's enough for me.</span>
+                    </div>
+                    <canvas class="scratch-pad"></canvas>
+                </div>
+                
+                <div class="coupon-container" style="min-height: 120px;">
+                    <div class="coupon" style="flex-direction: column; padding: 15px; justify-content: center;">
+                        <strong style="font-size: 1.1rem; color: #c0392b;">🌸 Take Care</strong>
+                        <span style="font-size: 0.9rem; font-weight: 500; margin-top: 8px; color: #5d4037; line-height: 1.4;">No matter what, I genuinely wish the best for you. Stay happy, stay safe, and enjoy your special day.</span>
+                    </div>
+                    <canvas class="scratch-pad"></canvas>
+                </div>
+
             </div>
+            
             <button class="heartNext">❤️</button>
         </section>
 
