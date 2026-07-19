@@ -288,13 +288,15 @@ button.heartNext {
     margin-top: 5px;
 }
 
-/* छोटा पेंग्विन (penguin5.gif) */
+/* छोटा पेंग्विन (penguin5.gif) - लिफाफे के बाहर फिक्स किया है */
 .side-penguin {
     position: absolute;
-    bottom: 10px;
-    right: 20px;
-    width: 65px; /* छोटा साइज़ */
+    bottom: -15px;      /* लिफाफे के थोड़ा सा नीचे से दिखेगा */
+    right: -30px;       /* लिफाफे के एकदम राईट साइड में */
+    width: 80px;        /* क्यूट सा साइज़ */
     mix-blend-mode: multiply;
+    z-index: 10;        /* लिफाफे के ऊपर दिखेगा */
+    pointer-events: none; /* इस पर क्लिक करने से लिफाफा खुलने में प्रॉब्लम नहीं होगी */
 }
 
 /* लिफाफा खुलने के बाद Next बटन */
