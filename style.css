@@ -204,6 +204,7 @@ button.heartNext {
 }
 
 /* Final Letter Glass Effect */
+
 .glass {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
@@ -212,4 +213,92 @@ button.heartNext {
     box-shadow: 0 8px 32px rgba(255, 192, 203, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.8);
     margin-bottom: 20px; /* स्क्रोल करने पर नीचे जगह मिले */
+}
+/* ================================= */
+/* Screen 4: Envelope Animation      */
+/* ================================= */
+.envelope-wrapper {
+    position: relative;
+    width: 280px;
+    height: 180px;
+    margin: 30px auto 10px auto;
+    cursor: pointer;
+}
+
+.envelope {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #d93838; /* लिफाफे का पीछे का लाल रंग */
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+/* लिफाफे का आगे का हिस्सा (Front flap) */
+.envelope-front {
+    position: absolute;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-bottom: 110px solid #c0392b; /* डार्क रेड */
+    z-index: 3;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* अंदर का लेटर (Yellowish Paper) */
+.letter {
+    position: absolute;
+    bottom: 10px;
+    width: 90%;
+    height: 160px;
+    background: #fdf5c9;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px dashed #d1c077;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 2; /* शुरुआत में लिफाफे के अंदर रहेगा */
+    transition: transform 0.8s ease-in-out; /* स्मूथ ऊपर जाने के लिए */
+}
+
+.letter p {
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: #5d4037;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* जब लिफाफे पर क्लिक होगा (.open क्लास जुड़ेगी) */
+.envelope-wrapper.open .letter {
+    transform: translateY(-130px); /* लेटर ऊपर खिसकेगा */
+    z-index: 4; /* लिफाफे के बाहर दिखने लगेगा */
+}
+
+.click-hint {
+    font-size: 1rem;
+    color: #c0392b;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* छोटा पेंग्विन (penguin5.gif) */
+.side-penguin {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    width: 65px; /* छोटा साइज़ */
+    mix-blend-mode: multiply;
+}
+
+/* लिफाफा खुलने के बाद Next बटन */
+#envelopeNextBtn {
+    margin-top: 15px;
+    z-index: 10;
 }
