@@ -11,7 +11,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden; /* पूरी वेबसाइट स्क्रोल नहीं होगी */
+    overflow: hidden; 
 }
 
 /* Mobile App Container */
@@ -23,7 +23,14 @@ body {
     background-color: transparent;
 }
 
-/* Screens - Yहाँ overflow-y: auto; ऐड किया है ताकि अंदर के पेज स्क्रोल हो सकें */
+/* अगर बैकग्राउंड में कोई अदृश्य चीज़ है, तो वो ब्लॉक नहीं करेगी */
+#floating-hearts, .cloud, .sparkles {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Screens */
 .screen {
     display: none; 
     flex-direction: column;
@@ -35,6 +42,7 @@ body {
     box-sizing: border-box;
     overflow-y: auto; 
     position: relative;
+    z-index: 1;
 }
 
 .screen.active {
@@ -62,29 +70,41 @@ p {
     color: #5d4037;
 }
 
-/* Basic Images */
+/* ================================= */
+/* ULTIMATE CLICK FIX FOR ALL IMAGES */
+/* ================================= */
 .character, .cake, .flowers {
     width: auto;
     max-width: 80%;
     margin-bottom: 20px;
     mix-blend-mode: multiply;
+    pointer-events: none; /* यह जादू है! अब कोई भी इमेज बटन को ब्लॉक नहीं करेगी */
 }
 
 /* ================================= */
 /* Custom Penguin Layout (Screen 1)  */
 /* ================================= */
 #screen1 {
-    justify-content: space-evenly; /* ये सब कुछ एक स्क्रीन में परफेक्ट सेट करेगा */
+    justify-content: space-evenly; 
     padding-top: 30px;
     padding-bottom: 30px;
-    overflow: hidden; /* स्क्रीन 1 बिल्कुल स्क्रोल नहीं होगा */
+    overflow: hidden; 
 }
 
-.middle-part, .bottom-part {
+.middle-part {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
+}
+
+.bottom-part {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 1000; /* ये पूरे बटन सेक्शन को सबसे आगे लाएगा */
 }
 
 /* 1. कॉर्नर लेफ्ट ऊपर वाला पेंग्विन */
@@ -92,13 +112,13 @@ p {
     position: absolute;
     top: 15px;
     left: 15px;
-    height: 60px; /* छोटा साइज़ */
+    height: 60px; 
     margin: 0;
 }
 
 /* 2. सेंटर वाला पेंग्विन */
 .center-penguin {
-    height: 20vh; /* स्क्रीन की हाइट के हिसाब से खुद एडजस्ट होगा */
+    height: 20vh; 
     max-height: 150px;
     margin-bottom: 5px;
 }
@@ -108,15 +128,14 @@ p {
     height: 12vh;
     max-height: 100px;
     margin-bottom: 10px;
-    pointer-events: none; /* फिक्स: पेंग्विन बटन का क्लिक नहीं रोकेगा */
 }
 
 /* ================================= */
 /* Last Screen (Screen 8)            */
 /* ================================= */
 #screen8 {
-    justify-content: flex-start; /* ये स्क्रोलिंग में मदद करेगा */
-    padding-top: 80px; /* बैक बटन के लिए जगह */
+    justify-content: flex-start; 
+    padding-top: 80px; 
 }
 
 /* Shake animation */
@@ -136,8 +155,8 @@ p {
 .buttons {
     display: flex;
     gap: 15px;
-    position: relative; /* फिक्स: बटन आगे लाने के लिए */
-    z-index: 999;       /* फिक्स: बटन को सबसे ऊपर सेट कर दिया */
+    position: relative; 
+    z-index: 9999; /* बटन्स को सबसे ऊपर रखा है */
 }
 
 button {
@@ -152,6 +171,7 @@ button {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(255, 117, 140, 0.4);
     transition: transform 0.2s, box-shadow 0.2s;
+    pointer-events: auto; /* बटन क्लिक होने चाहिए */
 }
 
 button:active {
@@ -166,7 +186,7 @@ button.heartNext {
     margin-top: 20px;
 }
 
-/* Back Button Styling (सिर्फ एरो और गोल डिज़ाइन) */
+/* Back Button Styling */
 .backBtn {
     position: absolute;
     top: 15px;
@@ -176,7 +196,7 @@ button.heartNext {
     border: 1px solid #ffb6c1;
     width: 45px;
     height: 45px;
-    border-radius: 50%; /* गोल बनाने के लिए */
+    border-radius: 50%; 
     font-size: 1.2rem;
     display: flex;
     justify-content: center;
@@ -184,7 +204,7 @@ button.heartNext {
     padding: 0;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 10;
+    z-index: 100;
 }
 
 /* Coupon Grid */
@@ -207,7 +227,6 @@ button.heartNext {
 }
 
 /* Final Letter Glass Effect */
-
 .glass {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
@@ -215,8 +234,9 @@ button.heartNext {
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(255, 192, 203, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.8);
-    margin-bottom: 20px; /* स्क्रोल करने पर नीचे जगह मिले */
+    margin-bottom: 20px; 
 }
+
 /* ================================= */
 /* Screen 4: Envelope Animation      */
 /* ================================= */
@@ -226,13 +246,14 @@ button.heartNext {
     height: 180px;
     margin: 30px auto 10px auto;
     cursor: pointer;
+    pointer-events: auto; /* लिफाफे पर क्लिक होना चाहिए */
 }
 
 .envelope {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #d93838; /* लिफाफे का पीछे का लाल रंग */
+    background: #d93838; 
     border-radius: 5px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     display: flex;
@@ -240,7 +261,6 @@ button.heartNext {
     align-items: flex-end;
 }
 
-/* लिफाफे का आगे का हिस्सा (Front flap) */
 .envelope-front {
     position: absolute;
     bottom: 0;
@@ -248,13 +268,12 @@ button.heartNext {
     height: 0;
     border-left: 140px solid transparent;
     border-right: 140px solid transparent;
-    border-bottom: 110px solid #c0392b; /* डार्क रेड */
+    border-bottom: 110px solid #c0392b; 
     z-index: 3;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
 
-/* अंदर का लेटर (Yellowish Paper) */
 .letter {
     position: absolute;
     bottom: 10px;
@@ -266,8 +285,8 @@ button.heartNext {
     border: 1px dashed #d1c077;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 2; /* शुरुआत में लिफाफे के अंदर रहेगा */
-    transition: transform 0.8s ease-in-out; /* स्मूथ ऊपर जाने के लिए */
+    z-index: 2; 
+    transition: transform 0.8s ease-in-out; 
 }
 
 .letter p {
@@ -278,10 +297,9 @@ button.heartNext {
     line-height: 1.3;
 }
 
-/* जब लिफाफे पर क्लिक होगा (.open क्लास जुड़ेगी) */
 .envelope-wrapper.open .letter {
-    transform: translateY(-130px); /* लेटर ऊपर खिसकेगा */
-    z-index: 4; /* लिफाफे के बाहर दिखने लगेगा */
+    transform: translateY(-130px); 
+    z-index: 4; 
 }
 
 .click-hint {
@@ -291,18 +309,16 @@ button.heartNext {
     margin-top: 5px;
 }
 
-/* छोटा पेंग्विन (penguin5.gif) - लिफाफे के बाहर फिक्स किया है */
 .side-penguin {
     position: absolute;
-    bottom: -15px;      /* लिफाफे के थोड़ा सा नीचे से दिखेगा */
-    right: -30px;       /* लिफाफे के एकदम राईट साइड में */
-    width: 80px;        /* क्यूट सा साइज़ */
+    bottom: -15px;      
+    right: -30px;       
+    width: 80px;        
     mix-blend-mode: multiply;
-    z-index: 10;        /* लिफाफे के ऊपर दिखेगा */
-    pointer-events: none; /* इस पर क्लिक करने से लिफाफा खुलने में प्रॉब्लम नहीं होगी */
+    z-index: 10;        
+    pointer-events: none; 
 }
 
-/* लिफाफा खुलने के बाद Next बटन */
 #envelopeNextBtn {
     margin-top: 15px;
     z-index: 10;
