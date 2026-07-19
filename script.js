@@ -169,3 +169,69 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(screen8, { attributes: true, attributeFilter: ['class'] });
+canvas.width
+// ===================================
+// Step 4: Scratch Card Logic
+// ===================================
+function initScratchCards() {
+    const canvases = document.querySelectorAll('.scratch-pad');
+    canvases.forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+
+        // सिल्वर कलर का कवर
+        ctx.fillStyle = '#b3b3b3'; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // ऊपर "Scratch Me!" का टेक्स्ट
+        ctx.font = "bold 18px Arial";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Scratch Me! ✨", canvas.width / 2, canvas.height / 2);
+
+        let isDrawing = false;
+
+        function scratch(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+            
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 18, 0, Math.PI * 2); 
+            ctx.fill();
+        }
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchmove', scratch, {passive: false});
+    });
+}
+
+const screen5Element = document.getElementById("screen5");
+if (screen5Element) {
+    const observerScratch = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (screen5Element.classList.contains("active") && !screen5Element.dataset.scratched) {
+                setTimeout(initScratchCards, 100); 
+                screen5Element.dataset.scratched = "true"; 
+            }
+        });
+    });
+    observerScratch.observe(screen5Element, { attributes: true, attributeFilter: ['class'] });
+}
+
