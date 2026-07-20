@@ -1,5 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@400;600&display=swap');
-
+/* --- Premium Preloader --- */
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-gradient);
+    z-index: 99999; /* Sabse upar rahega */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+.loader-content { text-align: center; }
+.bounce-loader { 
+    height: 100px; 
+    animation: loaderBounce 0.6s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5); 
+}
+@keyframes loaderBounce { 
+    from { transform: translateY(0); } 
+    to { transform: translateY(-20px); } 
+}
 /* --- Architectural Foundation (Variables) --- */
 :root {
     --bg-gradient: linear-gradient(135deg, #ffe6ea 0%, #fdfbfb 100%);
