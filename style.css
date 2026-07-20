@@ -264,3 +264,24 @@ button.heartNext {
     50% { transform: translate(-3px, 0px) rotate(1deg); }
     75% { transform: translate(3px, 2px) rotate(0deg); }
 }
+/* --- Glowing Name Reveal Animation --- */
+.glowing-name {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    color: #ffffff;
+    margin-top: 15px;
+    opacity: 0; /* Shuru mein name chupa rahega */
+    transform: scale(0.8);
+    transition: opacity 2s ease, transform 2s ease;
+}
+
+.glowing-name.show-name {
+    opacity: 1; /* Typewriter khatam hone ke baad dikhega */
+    transform: scale(1);
+    animation: neonGlow 1.5s ease-in-out infinite alternate; /* Chamkega */
+}
+
+@keyframes neonGlow {
+    from { text-shadow: 0 0 5px #ff758c, 0 0 10px #ff758c, 0 0 15px #c0392b; }
+    to { text-shadow: 0 0 10px #ff7eb3, 0 0 20px #ff7eb3, 0 0 30px #ff7eb3, 0 0 40px #ff758c; }
+}
