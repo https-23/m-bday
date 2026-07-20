@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
         animateParticles();
     }
 
-    // --- 5. TYPEWRITER EFFECT ---
+       // --- 5. TYPEWRITER EFFECT & NAME REVEAL ---
     function triggerTypewriter() {
         const pElement = document.getElementById("final-message");
         if (!pElement) return;
@@ -209,6 +209,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 pElement.innerHTML += (char === '\n') ? "<br>" : char;
                 i++;
                 setTimeout(typing, 35);
+            } else {
+                // Typewriter complete hone ke baad Name Reveal hoga
+                const secretName = document.getElementById("secret-name");
+                if(secretName) secretName.classList.add("show-name");
             }
         }
         typing();
