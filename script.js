@@ -1,5 +1,18 @@
-document.addEventListener("DOMContentLoaded", () => {
-    
+document.addEventListener("DOMContentLoaded", () => {    
+        // --- PRELOADER LOGIC ---
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            // Thoda delay taaki smooth transition ho
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.visibility = 'hidden';
+                }, 600); // Wait for fade out animation
+            }, 800); 
+        }
+    });
+
     const screens = document.querySelectorAll(".screen");
     let typeWriterTriggered = false;
 
