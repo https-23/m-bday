@@ -1,13 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 1. CORE STATE MANAGEMENT & HAPTICS ---
+    // --- 1. CORE STATE MANAGEMENT & AUDIO HAPTICS ---
     const screens = document.querySelectorAll(".screen");
     let typeWriterTriggered = false;
 
-    // HAPTIC FEEDBACK ENGINE (Vibration)
-    function triggerHaptic(pattern = 15) {
-        if ("vibrate" in navigator) {
-            navigator.vibrate(pattern);
+    // AUDIO HAPTIC ENGINE (Safe Audio Player)
+    function playPopSound() {
+        const pop = document.getElementById("pop-sound");
+        if (pop) {
+            pop.currentTime = 0; // Reset to start for rapid clicks
+            pop.play().catch(e => console.log("Audio waiting for user interaction"));
+        }
+    }
+
+    // 3D CONFETTI CANNON ENGINE
+    function fireConfetti() {
+        if (typeof confetti !== "undefined") {
+            var duration = 3000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ffb6c1', '#c0392b', '#ffffff', '#ff758c']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ffb6c1', '#c0392b', '#ffffff', '#ff758c']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }
     }
     
@@ -18,6 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
             targetScreen.classList.add("active");
         }
 
+        // Trigger Confetti Blast on Birthday Screen
+        if (screenId === "screen3") {
+            fireConfetti();
+        }
+
+        // Auto Reset Envelope
         if (screenId === "screen4") {
             const envelopeWrapper = document.getElementById("envelope-wrapper");
             const envelopeNextBtn = document.getElementById("envelopeNextBtn");
@@ -34,30 +71,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // --- 2. EVENT LISTENERS (NAVIGATION WITH HAPTICS) ---
+    // --- 2. EVENT LISTENERS (WITH POP SOUNDS) ---
     document.getElementById("yesBtn")?.addEventListener("click", () => {
-        triggerHaptic(30); 
+        playPopSound(); 
         const bgMusic = document.getElementById("bg-music");
         if (bgMusic) {
             bgMusic.volume = 0.5;
-            bgMusic.play().catch(e => console.log("Audio permission pending."));
+            bgMusic.play().catch(e => console.log("Music waiting."));
         }
         showScreen("screen2");
     });
     
     document.getElementById("noBtn")?.addEventListener("click", () => {
-        triggerHaptic([20, 50, 20]); 
+        playPopSound(); 
         showScreen("angry");
     });
     
     document.getElementById("tryAgain")?.addEventListener("click", () => {
-        triggerHaptic(20);
+        playPopSound();
         showScreen("screen1");
     });
 
     document.getElementById("screen2")?.addEventListener("click", (e) => {
         if(!e.target.classList.contains("backBtn")) {
-            triggerHaptic(15);
+            playPopSound();
             showScreen("screen3");
         }
     });
@@ -71,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Object.keys(nextMap).forEach(selector => {
         document.querySelector(selector)?.addEventListener("click", () => {
-            triggerHaptic(20);
+            playPopSound();
             showScreen(nextMap[selector]);
         });
     });
@@ -79,17 +116,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".backBtn").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
-            triggerHaptic(10); 
+            playPopSound(); 
             showScreen(btn.getAttribute("data-back"));
         });
     });
 
-    // --- 3. ENVELOPE LOGIC ---
+    // --- 3. ENVELOPE LOGIC (WITH CONFETTI) ---
     const envelopeWrapper = document.getElementById("envelope-wrapper");
     if (envelopeWrapper) {
         envelopeWrapper.addEventListener("click", () => {
+            if (!envelopeWrapper.classList.contains("open")) {
+                playPopSound();
+                fireConfetti(); // Envelope khulte hi party blast!
+            }
             envelopeWrapper.classList.add("open");
-            triggerHaptic([30, 50, 30]); 
             const clickHint = document.querySelector(".click-hint");
             if (clickHint) clickHint.style.display = "none"; 
             
@@ -100,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     document.getElementById("envelopeNextBtn")?.addEventListener("click", () => {
-        triggerHaptic(20);
+        playPopSound();
         showScreen("screen5");
     });
 
@@ -168,14 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 let char = text.charAt(i);
                 pElement.innerHTML += (char === '\n') ? "<br>" : char;
                 i++;
-                if(i % 3 === 0) triggerHaptic(2); 
                 setTimeout(typing, 35);
             }
         }
         typing();
     }
 
-    // --- 6. SCRATCH CARD SYSTEM ---
+    // --- 6. SCRATCH CARD SYSTEM (WITH AUDIO HAPTICS) ---
     const messages = {
         1: `<strong style="font-size: 1.4rem; color: var(--primary-color);">🎂 Happy Birthday!</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>`,
         2: `<strong style="font-size: 1.4rem; color: var(--primary-color);">💛 A Small Apology</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>`,
@@ -186,10 +225,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById('scratch-modal');
     const modalContent = document.getElementById('modal-message-content');
     const scratchCanvas = document.getElementById('popup-scratch-pad');
+    const scratchSound = document.getElementById('scratch-sound');
     
     document.querySelectorAll('.mini-card').forEach(card => {
         card.addEventListener('click', () => {
-            triggerHaptic(20);
+            playPopSound();
             modalContent.innerHTML = messages[card.getAttribute('data-id')];
             modal.classList.add('show');
             setTimeout(initPopupScratchCard, 300);
@@ -197,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('close-modal')?.addEventListener('click', () => {
-        triggerHaptic(10);
+        playPopSound();
         modal.classList.remove('show');
     });
 
@@ -216,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
         let isDrawing = false;
-        let lastVibrateTime = 0; 
+        let lastAudioTime = 0; 
 
         function scratch(e) {
             if (!isDrawing) return;
@@ -230,13 +270,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.arc(x, y, 25, 0, Math.PI * 2); 
             ctx.fill();
 
-            // ENGINEERED HAPTIC FIX: Time-based throttling
+            // ENGINEERED SOUND HAPTIC: Play scratch sound without spamming
             const now = Date.now();
-            if (now - lastVibrateTime > 60) { 
-                if ("vibrate" in navigator) {
-                    navigator.vibrate(15); 
+            if (now - lastAudioTime > 150) { 
+                if (scratchSound) {
+                    scratchSound.currentTime = 0;
+                    scratchSound.play().catch(e => {});
                 }
-                lastVibrateTime = now;
+                lastAudioTime = now;
             }
         }
 
@@ -249,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scratchCanvas.addEventListener('touchmove', scratch, {passive: false});
     }
 
-    // --- 7. GYROSCOPE & MOUSE PARALLAX ENGINE (The Magic) ---
+    // --- 7. GYROSCOPE & MOUSE PARALLAX ENGINE ---
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
 
