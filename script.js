@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // HAPTIC FEEDBACK ENGINE (Vibration)
     function triggerHaptic(pattern = 15) {
-        // Sirf un devices par chalega jo vibration support karte hain (Mobiles)
         if ("vibrate" in navigator) {
             navigator.vibrate(pattern);
         }
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 2. EVENT LISTENERS (NAVIGATION WITH HAPTICS) ---
     document.getElementById("yesBtn")?.addEventListener("click", () => {
-        triggerHaptic(30); // Heavy click feel
+        triggerHaptic(30); 
         const bgMusic = document.getElementById("bg-music");
         if (bgMusic) {
             bgMusic.volume = 0.5;
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     document.getElementById("noBtn")?.addEventListener("click", () => {
-        triggerHaptic([20, 50, 20]); // Angry double vibration
+        triggerHaptic([20, 50, 20]); 
         showScreen("angry");
     });
     
@@ -80,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".backBtn").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
-            triggerHaptic(10); // Light pop for back button
+            triggerHaptic(10); 
             showScreen(btn.getAttribute("data-back"));
         });
     });
@@ -90,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (envelopeWrapper) {
         envelopeWrapper.addEventListener("click", () => {
             envelopeWrapper.classList.add("open");
-            triggerHaptic([30, 50, 30]); // Envelope opening feel
+            triggerHaptic([30, 50, 30]); 
             const clickHint = document.querySelector(".click-hint");
             if (clickHint) clickHint.style.display = "none"; 
             
@@ -107,53 +106,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 4. HIGH PERFORMANCE PARTICLE SYSTEM ---
     const pCanvas = document.getElementById("particle-canvas");
-    const pCtx = pCanvas.getContext("2d");
-    let particles = [];
-    const emojis = ["🌸", "💖", "✨", "🌸", "🤍"];
+    if (pCanvas) {
+        const pCtx = pCanvas.getContext("2d");
+        let particles = [];
+        const emojis = ["🌸", "💖", "✨", "🌸", "🤍"];
 
-    function resizeCanvas() {
-        pCanvas.width = window.innerWidth;
-        pCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+        function resizeCanvas() {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-    class Particle {
-        constructor() { this.reset(); this.y = Math.random() * pCanvas.height; }
-        reset() {
-            this.x = Math.random() * pCanvas.width;
-            this.y = -50;
-            this.size = Math.random() * 15 + 15;
-            this.speed = Math.random() * 2 + 1.5;
-            this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            this.rotation = Math.random() * 360;
-            this.rotationSpeed = (Math.random() - 0.5) * 2;
+        class Particle {
+            constructor() { this.reset(); this.y = Math.random() * pCanvas.height; }
+            reset() {
+                this.x = Math.random() * pCanvas.width;
+                this.y = -50;
+                this.size = Math.random() * 15 + 15;
+                this.speed = Math.random() * 2 + 1.5;
+                this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 2;
+            }
+            update() {
+                this.y += this.speed;
+                this.rotation += this.rotationSpeed;
+                if (this.y > pCanvas.height + 50) this.reset();
+            }
+            draw() {
+                pCtx.save();
+                pCtx.translate(this.x, this.y);
+                pCtx.rotate(this.rotation * Math.PI / 180);
+                pCtx.font = `${this.size}px Arial`;
+                pCtx.textAlign = "center";
+                pCtx.textBaseline = "middle";
+                pCtx.globalAlpha = 0.6;
+                pCtx.fillText(this.emoji, 0, 0);
+                pCtx.restore();
+            }
         }
-        update() {
-            this.y += this.speed;
-            this.rotation += this.rotationSpeed;
-            if (this.y > pCanvas.height + 50) this.reset();
-        }
-        draw() {
-            pCtx.save();
-            pCtx.translate(this.x, this.y);
-            pCtx.rotate(this.rotation * Math.PI / 180);
-            pCtx.font = `${this.size}px Arial`;
-            pCtx.textAlign = "center";
-            pCtx.textBaseline = "middle";
-            pCtx.globalAlpha = 0.6;
-            pCtx.fillText(this.emoji, 0, 0);
-            pCtx.restore();
-        }
-    }
 
-    for (let i = 0; i < 30; i++) particles.push(new Particle());
-    function animateParticles() {
-        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animateParticles);
+        for (let i = 0; i < 30; i++) particles.push(new Particle());
+        function animateParticles() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
     }
-    animateParticles();
 
     // --- 5. TYPEWRITER EFFECT ---
     function triggerTypewriter() {
@@ -167,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 let char = text.charAt(i);
                 pElement.innerHTML += (char === '\n') ? "<br>" : char;
                 i++;
-                // Typewriter tick haptic (very light, skip some to avoid battery drain)
                 if(i % 3 === 0) triggerHaptic(2); 
                 setTimeout(typing, 35);
             }
@@ -215,8 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.textBaseline = "middle";
         ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
-                let isDrawing = false;
-        let lastVibrateTime = 0; // टाइम ट्रैक करने के लिए
+        let isDrawing = false;
+        let lastVibrateTime = 0; 
 
         function scratch(e) {
             if (!isDrawing) return;
@@ -232,17 +232,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // ENGINEERED HAPTIC FIX: Time-based throttling
             const now = Date.now();
-            if (now - lastVibrateTime > 60) { // हर 60ms में सिर्फ एक बार ट्रिगर होगा
+            if (now - lastVibrateTime > 60) { 
                 if ("vibrate" in navigator) {
-                    navigator.vibrate(15); // 15ms की सॉलिड वाइब्रेशन
+                    navigator.vibrate(15); 
                 }
                 lastVibrateTime = now;
             }
-        }
-
-            // Sandpaper Haptic Effect
-            scratchCount++;
-            if (scratchCount % 5 === 0) triggerHaptic(5); 
         }
 
         scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
@@ -258,42 +253,36 @@ document.addEventListener("DOMContentLoaded", () => {
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
 
-    // Mobile Phone Sensor Tracking
     window.addEventListener("deviceorientation", (e) => {
         if (!e.gamma || !e.beta) return;
-        let tiltX = e.gamma; // Left to right
-        let tiltY = e.beta;  // Front to back
+        let tiltX = e.gamma; 
+        let tiltY = e.beta;  
         
-        // Limit maximum tilt constraints
         if (tiltX > 25) tiltX = 25; if (tiltX < -25) tiltX = -25;
-        if (tiltY > 55) tiltY = 55; if (tiltY < 25) tiltY = 25; // Normal holding angle is ~40deg
+        if (tiltY > 55) tiltY = 55; if (tiltY < 25) tiltY = 25; 
         
         targetX = (tiltX / 25) * 15; 
         targetY = ((tiltY - 40) / 15) * 15; 
     });
 
-    // Desktop Mouse Tracking (Fallback)
     document.addEventListener("mousemove", (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 30; // Max 15px movement
+        const x = (e.clientX / window.innerWidth - 0.5) * 30; 
         const y = (e.clientY / window.innerHeight - 0.5) * 30;
         targetX = x; 
         targetY = y;
     });
 
-    // Smooth Animation Loop
     function renderParallax() {
-        // LERP (Linear Interpolation) for buttery smooth movement
         currentX += (targetX - currentX) * 0.1;
         currentY += (targetY - currentY) * 0.1;
         
         document.querySelectorAll(".character, .glass, .envelope-wrapper, .cake, .flowers").forEach(el => {
-            // Apply different depths. Glass moves slower than characters.
             const depth = el.classList.contains('glass') ? 0.4 : 1;
             el.style.transform = `translate(${currentX * depth}px, ${currentY * depth}px)`;
         });
         
         requestAnimationFrame(renderParallax);
     }
-    renderParallax(); // Start Parallax Engine
+    renderParallax(); 
 
 });
