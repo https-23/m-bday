@@ -1,273 +1,242 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@400;600&display=swap');
+document.addEventListener("DOMContentLoaded", () => {
+    
+    const screens = document.querySelectorAll(".screen");
+    let typeWriterTriggered = false;
 
-:root {
-    --bg-gradient: linear-gradient(135deg, #ffe6ea 0%, #fdfbfb 100%);
-    --primary-color: #c0392b;
-    --text-color: #5d4037;
-    --btn-gradient: linear-gradient(to right, #ff758c 0%, #ff7eb3 100%);
-    --font-heading: 'Caveat', cursive;
-    --font-body: 'Fredoka', sans-serif;
-}
+    // AUDIO HAPTIC ENGINE
+    function playPopSound() {
+        const pop = document.getElementById("pop-sound");
+        if (pop) {
+            pop.currentTime = 0;
+            pop.play().catch(e => {});
+        }
+    }
 
-body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg-gradient);
-    font-family: var(--font-body);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    touch-action: manipulation;
-}
+    // CONFETTI CANNON
+    function fireConfetti() {
+        if (typeof confetti !== "undefined") {
+            var duration = 3000;
+            var end = Date.now() + duration;
 
-#particle-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-}
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffb6c1', '#c0392b', '#ffffff', '#ff758c'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffb6c1', '#c0392b', '#ffffff', '#ff758c'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+    }
+    
+    function showScreen(screenId) {
+        screens.forEach(screen => screen.classList.remove("active"));
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) targetScreen.classList.add("active");
 
-#app {
-    width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    position: relative;
-    background-color: transparent;
-    z-index: 1;
-}
+        if (screenId === "screen3") fireConfetti();
 
-.screen {
-    display: none; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding: 20px;
-    text-align: center;
-    box-sizing: border-box;
-    overflow-y: auto; 
-    position: absolute;
-    width: 100%;
-}
+        if (screenId === "screen4") {
+            const envelopeWrapper = document.getElementById("envelope-wrapper");
+            const envelopeNextBtn = document.getElementById("envelopeNextBtn");
+            const clickHint = document.querySelector(".click-hint");
+            
+            if (envelopeWrapper) envelopeWrapper.classList.remove("open");
+            if (envelopeNextBtn) envelopeNextBtn.style.display = "none";
+            if (clickHint) clickHint.style.display = "block";
+        }
 
-.screen.active {
-    display: flex;
-    animation: fadeIn 0.5s ease-out forwards;
-}
+        if (screenId === "screen8" && !typeWriterTriggered) {
+            triggerTypewriter();
+            typeWriterTriggered = true;
+        }
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    document.getElementById("yesBtn")?.addEventListener("click", () => {
+        playPopSound(); 
+        const bgMusic = document.getElementById("bg-music");
+        if (bgMusic) { bgMusic.volume = 0.5; bgMusic.play().catch(e => {}); }
+        showScreen("screen2");
+    });
+    
+    document.getElementById("noBtn")?.addEventListener("click", () => { playPopSound(); showScreen("angry"); });
+    document.getElementById("tryAgain")?.addEventListener("click", () => { playPopSound(); showScreen("screen1"); });
 
-h1, h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    line-height: 1.2;
-}
+    document.getElementById("screen2")?.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("backBtn")) { playPopSound(); showScreen("screen3"); }
+    });
 
-p {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    color: var(--text-color);
-}
+    const nextMap = {
+        "#screen3 .heartNext": "screen4", "#screen5 .heartNext": "screen6",
+        "#screen6 .heartNext": "screen7", "#screen7 .heartNext": "screen8"
+    };
 
-.character, .cake, .flowers {
-    max-width: 80%;
-    margin-bottom: 20px;
-    mix-blend-mode: multiply; 
-    pointer-events: none; 
-}
+    Object.keys(nextMap).forEach(selector => {
+        document.querySelector(selector)?.addEventListener("click", () => { playPopSound(); showScreen(nextMap[selector]); });
+    });
 
-.character, .glass, .envelope-wrapper, .cake, .flowers {
-    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: transform; 
-}
+    document.querySelectorAll(".backBtn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation(); playPopSound(); showScreen(btn.getAttribute("data-back"));
+        });
+    });
 
-#screen1 { justify-content: space-evenly; padding: 30px 0; overflow: hidden; }
-.middle-part, .bottom-part { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.corner-penguin { position: absolute; top: 15px; left: 15px; height: 60px; margin: 0; }
-.center-penguin { height: 20vh; max-height: 150px; margin-bottom: 5px; }
-.above-btn-penguin { height: 12vh; max-height: 100px; margin-bottom: 10px; }
+    const envelopeWrapper = document.getElementById("envelope-wrapper");
+    if (envelopeWrapper) {
+        envelopeWrapper.addEventListener("click", () => {
+            if (!envelopeWrapper.classList.contains("open")) { playPopSound(); fireConfetti(); }
+            envelopeWrapper.classList.add("open");
+            const clickHint = document.querySelector(".click-hint");
+            if (clickHint) clickHint.style.display = "none"; 
+            setTimeout(() => {
+                const btn = document.getElementById("envelopeNextBtn");
+                if(btn) btn.style.display = "inline-block";
+            }, 1000);
+        });
+    }
+    document.getElementById("envelopeNextBtn")?.addEventListener("click", () => { playPopSound(); showScreen("screen5"); });
 
-.buttons { display: flex; gap: 15px; position: relative; z-index: 10; }
+    const pCanvas = document.getElementById("particle-canvas");
+    if (pCanvas) {
+        const pCtx = pCanvas.getContext("2d");
+        let particles = [];
+        const emojis = ["🌸", "💖", "✨", "🌸", "🤍"];
 
-button {
-    background: var(--btn-gradient);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    font-size: 1.3rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255, 117, 140, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
-    pointer-events: auto; 
-}
+        function resizeCanvas() { pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-button:active { transform: scale(0.92); }
+        class Particle {
+            constructor() { this.reset(); this.y = Math.random() * pCanvas.height; }
+            reset() {
+                this.x = Math.random() * pCanvas.width; this.y = -50; this.size = Math.random() * 15 + 15;
+                this.speed = Math.random() * 2 + 1.5; this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                this.rotation = Math.random() * 360; this.rotationSpeed = (Math.random() - 0.5) * 2;
+            }
+            update() {
+                this.y += this.speed; this.rotation += this.rotationSpeed;
+                if (this.y > pCanvas.height + 50) this.reset();
+            }
+            draw() {
+                pCtx.save(); pCtx.translate(this.x, this.y); pCtx.rotate(this.rotation * Math.PI / 180);
+                pCtx.font = `${this.size}px Arial`; pCtx.textAlign = "center"; pCtx.textBaseline = "middle";
+                pCtx.globalAlpha = 0.6; pCtx.fillText(this.emoji, 0, 0); pCtx.restore();
+            }
+        }
 
-button.heartNext {
-    border-radius: 50%;
-    padding: 15px 20px;
-    font-size: 1.5rem;
-    margin-top: 20px;
-}
+        for (let i = 0; i < 30; i++) particles.push(new Particle());
+        function animateParticles() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    }
 
-.backBtn {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--primary-color);
-    border: 1px solid #ffb6c1;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%; 
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 100;
-}
+    // --- TYPEWRITER & SECRET NAME REVEAL ---
+    function triggerTypewriter() {
+        const pElement = document.getElementById("final-message");
+        if (!pElement) return;
+        const text = pElement.innerHTML.replace(/<br>/g, '\n').trim(); 
+        pElement.innerHTML = "";
+        let i = 0;
+        function typing() {
+            if (i < text.length) {
+                let char = text.charAt(i);
+                pElement.innerHTML += (char === '\n') ? "<br>" : char;
+                i++;
+                setTimeout(typing, 35);
+            } else {
+                // Typing khatam hone ke baad Secret Name Glow karega!
+                const secretName = document.getElementById("secret-name");
+                if (secretName) {
+                    secretName.classList.add("show-name");
+                }
+            }
+        }
+        typing();
+    }
 
-.envelope-wrapper {
-    position: relative;
-    width: 280px;
-    height: 180px;
-    margin: 30px auto 10px auto;
-    cursor: pointer;
-    pointer-events: auto; 
-}
-.envelope {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: #d93838; 
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-}
-.envelope-front {
-    position: absolute;
-    bottom: 0;
-    width: 0;
-    height: 0;
-    border-left: 140px solid transparent;
-    border-right: 140px solid transparent;
-    border-bottom: 110px solid #c0392b; 
-    z-index: 3;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-.letter {
-    position: absolute;
-    bottom: 10px;
-    width: 90%;
-    height: 160px;
-    background: #fdf5c9;
-    padding: 15px;
-    box-sizing: border-box;
-    border: 1px dashed #d1c077;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 2; 
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-}
-.letter p { font-family: var(--font-heading); font-size: 1.1rem; margin: 0; line-height: 1.3; }
-.envelope-wrapper.open .letter { transform: translateY(-130px); z-index: 4; }
-.click-hint { font-size: 1rem; color: var(--primary-color); font-weight: bold; margin-top: 5px; }
-.side-penguin { position: absolute; bottom: -15px; right: -30px; width: 80px; z-index: 10; pointer-events: none; }
-#envelopeNextBtn { margin-top: 15px; z-index: 10; }
+    const messages = {
+        1: `<strong style="font-size: 1.4rem; color: var(--primary-color);">🎂 Happy Birthday!</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">Wishing you a year full of happiness, good health, and countless reasons to smile. Have an amazing birthday!</span>`,
+        2: `<strong style="font-size: 1.4rem; color: var(--primary-color);">💛 A Small Apology</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">If I ever made you uncomfortable or hurt you in any way, I'm truly sorry. That was never my intention.</span>`,
+        3: `<strong style="font-size: 1.4rem; color: var(--primary-color);">💌 Just One Thing</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">You don't have to reply. I just hope you read this. That's enough for me.</span>`,
+        4: `<strong style="font-size: 1.4rem; color: var(--primary-color);">🌸 Take Care</strong><br><br><span style="font-size: 1.1rem; color: var(--text-color);">No matter what, I genuinely wish the best for you. Stay happy, stay safe, and enjoy your special day.</span>`
+    };
 
-.mini-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; margin: 20px 0; }
-.mini-card {
-    background: #ffb6c1;
-    padding: 20px 10px;
-    border-radius: 15px;
-    font-weight: bold;
-    color: #a83246;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-    font-size: 1.1rem;
-}
-.mini-card:active { transform: scale(0.95); }
+    const modal = document.getElementById('scratch-modal');
+    const modalContent = document.getElementById('modal-message-content');
+    const scratchCanvas = document.getElementById('popup-scratch-pad');
+    const scratchSound = document.getElementById('scratch-sound');
+    
+    document.querySelectorAll('.mini-card').forEach(card => {
+        card.addEventListener('click', () => {
+            playPopSound();
+            modalContent.innerHTML = messages[card.getAttribute('data-id')];
+            modal.classList.add('show');
+            setTimeout(initPopupScratchCard, 300);
+        });
+    });
 
-#scratch-modal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
-    z-index: 10000; display: flex; justify-content: center; align-items: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-}
-#scratch-modal.show { opacity: 1; pointer-events: auto; }
-.scratch-modal-content {
-    position: relative; width: 85%; min-height: 250px; background: #fdf5c9;
-    border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex; justify-content: center; align-items: center; text-align: center;
-    padding: 25px; transform: scale(0.5); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    overflow: hidden; box-sizing: border-box;
-}
-#scratch-modal.show .scratch-modal-content { transform: scale(1); }
-#close-modal {
-    position: absolute; top: 10px; right: 10px;
-    background: #ff758c; color: white; border: none; border-radius: 50%;
-    width: 30px; height: 30px; z-index: 2000; cursor: pointer; font-weight: bold;
-}
-#popup-scratch-pad { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; touch-action: none; }
+    document.getElementById('close-modal')?.addEventListener('click', () => { playPopSound(); modal.classList.remove('show'); });
 
-#screen8 { padding-top: 80px; justify-content: flex-start; }
-.glass {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(255, 192, 203, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    margin-bottom: 20px;
-}
+    function initPopupScratchCard() {
+        const ctx = scratchCanvas.getContext('2d');
+        const rect = scratchCanvas.parentElement.getBoundingClientRect();
+        scratchCanvas.width = rect.width; scratchCanvas.height = rect.height;
 
-/* --- GLOWING NAME REVEAL --- */
-.glowing-name {
-    font-family: var(--font-heading);
-    font-size: 2.8rem;
-    color: #c0392b;
-    margin-top: 15px;
-    opacity: 0; 
-    transform: scale(0.8);
-    transition: opacity 2s ease, transform 2s ease;
-}
+        ctx.fillStyle = '#b3b3b3'; ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+        ctx.font = "bold 24px 'Fredoka', sans-serif"; ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("Scratch Me! ✨", scratchCanvas.width / 2, scratchCanvas.height / 2);
 
-.glowing-name.show-name {
-    opacity: 1; 
-    transform: scale(1);
-    animation: neonGlow 1.5s ease-in-out infinite alternate; 
-}
+        let isDrawing = false; let lastAudioTime = 0; 
 
-@keyframes neonGlow {
-    from { text-shadow: 0 0 5px #ff758c, 0 0 10px #ff758c, 0 0 15px #c0392b; }
-    to { text-shadow: 0 0 10px #ff7eb3, 0 0 20px #ff7eb3, 0 0 30px #ff7eb3, 0 0 40px #ff758c; }
-}
+        function scratch(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const canvasRect = scratchCanvas.getBoundingClientRect();
+            let x = (e.touches ? e.touches[0].clientX : e.clientX) - canvasRect.left;
+            let y = (e.touches ? e.touches[0].clientY : e.clientY) - canvasRect.top;
 
-.shake { animation: shake 0.5s infinite; }
-@keyframes shake {
-    0%, 100% { transform: translate(1px, -1px) rotate(0deg); }
-    25% { transform: translate(-1px, -2px) rotate(-1deg); }
-    50% { transform: translate(-3px, 0px) rotate(1deg); }
-    75% { transform: translate(3px, 2px) rotate(0deg); }
-}
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI * 2); ctx.fill();
+
+            const now = Date.now();
+            if (now - lastAudioTime > 150) { 
+                if (scratchSound) { scratchSound.currentTime = 0; scratchSound.play().catch(e => {}); }
+                lastAudioTime = now;
+            }
+        }
+
+        scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
+        scratchCanvas.addEventListener('mouseup', () => isDrawing = false);
+        scratchCanvas.addEventListener('mousemove', scratch);
+        scratchCanvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+        scratchCanvas.addEventListener('touchend', () => isDrawing = false);
+        scratchCanvas.addEventListener('touchmove', scratch, {passive: false});
+    }
+
+    let targetX = 0, targetY = 0; let currentX = 0, currentY = 0;
+
+    window.addEventListener("deviceorientation", (e) => {
+        if (!e.gamma || !e.beta) return;
+        let tiltX = e.gamma; let tiltY = e.beta;  
+        if (tiltX > 25) tiltX = 25; if (tiltX < -25) tiltX = -25;
+        if (tiltY > 55) tiltY = 55; if (tiltY < 25) tiltY = 25; 
+        targetX = (tiltX / 25) * 15; targetY = ((tiltY - 40) / 15) * 15; 
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 30; 
+        const y = (e.clientY / window.innerHeight - 0.5) * 30;
+        targetX = x; targetY = y;
+    });
+
+    function renderParallax() {
+        currentX += (targetX - currentX) * 0.1; currentY += (targetY - currentY) * 0.1;
+        document.querySelectorAll(".character, .glass, .envelope-wrapper, .cake, .flowers").forEach(el => {
+            const depth = el.classList.contains('glass') ? 0.4 : 1;
+            el.style.transform = `translate(${currentX * depth}px, ${currentY * depth}px)`;
+        });
+        requestAnimationFrame(renderParallax);
+    }
+    renderParallax(); 
+});
